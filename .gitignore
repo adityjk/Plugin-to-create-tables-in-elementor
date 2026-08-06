@@ -1,0 +1,92 @@
+# =====================================================================
+# OS & Editor Files
+# =====================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor Settings
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.ionide
+
+# =====================================================================
+# Node.js & Dependencies
+# =====================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm
+.yarn/
+.yarn-integrity
+dist/
+build/
+
+# =====================================================================
+# PHP & Composer
+# =====================================================================
+vendor/
+composer.lock
+*.cache
+
+# =====================================================================
+# WordPress Core, Logs & Data
+# Hanya plugin wp-table-builder & konfigurasi repo yang di-track
+# =====================================================================
+wp-content/*
+!wp-content/plugins/
+wp-content/plugins/*
+!wp-content/plugins/wp-table-builder/
+
+# WordPress debug & server logs
+wp-content/debug.log
+*.log
+error_log
+
+# Uploads & User Media (jika ada lokal)
+wp-content/uploads/
+
+# =====================================================================
+# Database Dumps & Exports
+# =====================================================================
+*.sql
+*.sql.gz
+*.sqlite
+*.db
+
+# =====================================================================
+# Docker Volumes & Local Environment Data
+# =====================================================================
+.docker/
+docker-data/
+mysql-data/
+wp-data/
+.env
+.env.local
+.env.*.local
+*.env
+
+# =====================================================================
+# Temporary & Backup Files
+# =====================================================================
+*.bak
+*.tmp
+*.orig
+*.rej
+*.patch
+*.zip
+*.tar.gz
+.gemini/
+

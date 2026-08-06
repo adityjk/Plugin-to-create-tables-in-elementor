@@ -1,0 +1,1018 @@
+:root {
+    --wtb-primary: #4f46e5;
+    --wtb-primary-hover: #4338ca;
+    --wtb-primary-light: #eef2ff;
+    --wtb-primary-border: #c7d2fe;
+    
+    --wtb-bg: #f8fafc;
+    --wtb-card-bg: #ffffff;
+    --wtb-border: #e2e8f0;
+    --wtb-border-hover: #cbd5e1;
+    
+    --wtb-text-dark: #0f172a;
+    --wtb-text-main: #334155;
+    --wtb-text-muted: #64748b;
+    --wtb-text-light: #94a3b8;
+    
+    --wtb-danger: #ef4444;
+    --wtb-danger-bg: #fef2f2;
+    --wtb-danger-border: #fecaca;
+    
+    --wtb-success: #10b981;
+    --wtb-success-bg: #ecfdf5;
+    
+    --wtb-radius-sm: 6px;
+    --wtb-radius: 10px;
+    --wtb-radius-lg: 14px;
+    
+    --wtb-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --wtb-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --wtb-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+    
+    --wtb-transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.wtb-admin-wrap {
+    max-width: 1600px;
+    margin: 20px 20px 40px 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+    color: var(--wtb-text-main);
+}
+
+.wtb-admin-wrap * {
+    box-sizing: border-box;
+}
+
+.wtb-admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.wtb-admin-header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: var(--wtb-text-dark);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wtb-admin-header h1 .dashicons {
+    font-size: 1.8rem;
+    width: 1.8rem;
+    height: 1.8rem;
+    color: var(--wtb-primary);
+}
+
+.wtb-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--wtb-primary);
+    color: #ffffff !important;
+    border: none;
+    padding: 9px 18px;
+    border-radius: var(--wtb-radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.25);
+    transition: var(--wtb-transition);
+}
+
+.wtb-btn-primary:hover {
+    background: var(--wtb-primary-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(79, 70, 229, 0.35);
+}
+
+.wtb-btn-primary:active {
+    transform: translateY(0);
+}
+
+.wtb-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.wtb-stat-card {
+    background: var(--wtb-card-bg);
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--wtb-shadow-sm);
+    transition: var(--wtb-transition);
+}
+
+.wtb-stat-card:hover {
+    border-color: var(--wtb-primary-border);
+    box-shadow: var(--wtb-shadow-md);
+    transform: translateY(-2px);
+}
+
+.wtb-stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--wtb-radius-sm);
+    background: var(--wtb-primary-light);
+    color: var(--wtb-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    flex-shrink: 0;
+}
+
+.wtb-stat-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.wtb-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--wtb-text-dark);
+    line-height: 1.2;
+}
+
+.wtb-stat-label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--wtb-text-muted);
+}
+
+.wtb-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    background: var(--wtb-card-bg);
+    border: 2px dashed var(--wtb-border);
+    border-radius: var(--wtb-radius-lg);
+    margin-top: 20px;
+    text-align: center;
+}
+
+.wtb-empty-icon-wrap {
+    width: 72px;
+    height: 72px;
+    background: var(--wtb-primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+
+.wtb-empty-icon-wrap .dashicons {
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
+    color: var(--wtb-primary);
+}
+
+.wtb-empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--wtb-text-dark);
+    margin: 0 0 8px;
+}
+
+.wtb-empty-state p {
+    font-size: 0.95rem;
+    color: var(--wtb-text-muted);
+    margin: 0 0 24px;
+    max-width: 400px;
+}
+
+.wtb-table-card {
+    background: var(--wtb-card-bg);
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius);
+    box-shadow: var(--wtb-shadow-sm);
+    overflow: hidden;
+}
+
+.wtb-table-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0;
+}
+
+.wtb-table-list th {
+    background: #f8fafc;
+    padding: 14px 18px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--wtb-text-muted);
+    border-bottom: 1px solid var(--wtb-border);
+    text-align: left;
+}
+
+.wtb-table-list td {
+    padding: 16px 18px;
+    font-size: 0.92rem;
+    color: var(--wtb-text-main);
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.wtb-table-list tr:last-child td {
+    border-bottom: none;
+}
+
+.wtb-table-list tr:hover td {
+    background: #f8fafc;
+}
+
+.wtb-table-name {
+    font-weight: 600;
+    color: var(--wtb-text-dark);
+    font-size: 0.98rem;
+    text-decoration: none;
+    transition: var(--wtb-transition);
+}
+
+.wtb-table-name:hover {
+    color: var(--wtb-primary);
+}
+
+.wtb-shortcode-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.83rem;
+    color: #475569;
+}
+
+.wtb-btn-copy-mini {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--wtb-primary);
+    padding: 2px 4px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    transition: var(--wtb-transition);
+}
+
+.wtb-btn-copy-mini:hover {
+    background: var(--wtb-primary-light);
+}
+
+.wtb-action-buttons {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.wtb-btn-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.83rem;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--wtb-border);
+    background: #ffffff;
+    color: var(--wtb-text-main);
+    transition: var(--wtb-transition);
+    cursor: pointer;
+}
+
+.wtb-btn-action:hover {
+    border-color: var(--wtb-primary-border);
+    color: var(--wtb-primary);
+    background: var(--wtb-primary-light);
+}
+
+.wtb-btn-action.wtb-btn-delete {
+    color: var(--wtb-danger);
+    border-color: var(--wtb-border);
+}
+
+.wtb-btn-action.wtb-btn-delete:hover {
+    background: var(--wtb-danger-bg);
+    border-color: var(--wtb-danger-border);
+    color: var(--wtb-danger);
+}
+
+.wtb-save-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(8px);
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius);
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    box-shadow: var(--wtb-shadow-md);
+    position: sticky;
+    top: 40px;
+    z-index: 100;
+}
+
+.wtb-save-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+    min-width: 0;
+}
+
+.wtb-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--wtb-text-muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: #f8fafc;
+    border: 1px solid var(--wtb-border);
+    transition: var(--wtb-transition);
+}
+
+.wtb-back-link:hover {
+    color: var(--wtb-primary);
+    border-color: var(--wtb-primary-border);
+    background: var(--wtb-primary-light);
+}
+
+.wtb-title-input {
+    font-size: 1.15rem !important;
+    font-weight: 600 !important;
+    color: var(--wtb-text-dark) !important;
+    border: 1px solid transparent !important;
+    background: transparent !important;
+    padding: 6px 12px !important;
+    border-radius: var(--wtb-radius-sm) !important;
+    flex: 1;
+    min-width: 200px;
+    max-width: 440px;
+    transition: var(--wtb-transition) !important;
+}
+
+.wtb-title-input:hover {
+    border-color: var(--wtb-border) !important;
+    background: #ffffff !important;
+}
+
+.wtb-title-input:focus {
+    border-color: var(--wtb-primary) !important;
+    background: #ffffff !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15) !important;
+}
+
+.wtb-btn-save {
+    padding: 9px 24px !important;
+    font-size: 0.92rem !important;
+    border-radius: var(--wtb-radius-sm) !important;
+}
+
+.wtb-save-notice {
+    margin: 0 0 20px;
+    padding: 12px 18px;
+    border-radius: var(--wtb-radius-sm);
+    border-left-width: 4px;
+    font-size: 0.9rem;
+    box-shadow: var(--wtb-shadow-sm);
+}
+
+.wtb-onboarding-tips {
+    margin: 0 0 24px;
+    background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 100%);
+    border: 1px solid var(--wtb-primary-border);
+    border-radius: var(--wtb-radius);
+    padding: 18px 22px;
+    box-shadow: var(--wtb-shadow-sm);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.wtb-tips-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.wtb-tips-header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #312e81;
+}
+
+.wtb-tips-header-title .dashicons {
+    color: var(--wtb-primary);
+    font-size: 1.2rem;
+}
+
+.wtb-tips-dismiss {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #6366f1;
+    font-size: 1rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: var(--wtb-transition);
+}
+
+.wtb-tips-dismiss:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #312e81;
+}
+
+.wtb-tips-steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.wtb-tips-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: #ffffff;
+    border: 1px solid #e0e7ff;
+    border-radius: var(--wtb-radius-sm);
+    padding: 12px 14px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.wtb-step-num {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    background: var(--wtb-primary);
+    color: #ffffff;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.wtb-step-body strong {
+    font-size: 0.85rem;
+    color: #1e1b4b;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.wtb-step-body span {
+    font-size: 0.78rem;
+    color: var(--wtb-text-muted);
+    line-height: 1.4;
+}
+
+.wtb-loader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 60px 20px;
+    background: #ffffff;
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius);
+    color: var(--wtb-text-muted);
+    font-size: 0.95rem;
+}
+
+.wtb-editor-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 24px;
+    align-items: start;
+}
+
+@media (max-width: 1200px) {
+    .wtb-editor-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.wtb-editor-panel {
+    background: var(--wtb-card-bg);
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius);
+    padding: 24px;
+    box-shadow: var(--wtb-shadow-sm);
+    min-width: 0;
+}
+
+.wtb-editor-panel__header {
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--wtb-border);
+}
+
+.wtb-editor-panel__header h2 {
+    margin: 0 0 4px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--wtb-text-dark);
+}
+
+.wtb-editor-panel__header .description {
+    margin: 0;
+    color: var(--wtb-text-muted);
+    font-size: 0.85rem;
+}
+
+#wtb-editor-table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius-sm);
+    background: #ffffff;
+}
+
+#wtb-editor-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 550px;
+}
+
+#wtb-editor-table th,
+#wtb-editor-table td {
+    border: 1px solid var(--wtb-border);
+    padding: 8px;
+    vertical-align: middle;
+}
+
+#wtb-editor-table thead {
+    background: #f8fafc;
+}
+
+.wtb-action-col {
+    width: 42px !important;
+    text-align: center;
+}
+
+.wtb-col-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 150px;
+    padding: 4px;
+}
+
+.wtb-col-header__top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.wtb-col-label {
+    flex: 1;
+    font-weight: 600;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    padding: 6px 8px;
+    font-size: 0.88rem;
+    color: var(--wtb-text-dark);
+    min-width: 0;
+    transition: var(--wtb-transition);
+}
+
+.wtb-col-label:focus {
+    outline: none;
+    border-color: var(--wtb-primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.wtb-col-type {
+    width: 100%;
+    font-size: 0.78rem;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    padding: 5px 8px;
+    color: var(--wtb-text-main);
+    background: #ffffff;
+    cursor: pointer;
+    transition: var(--wtb-transition);
+}
+
+.wtb-col-type:focus {
+    outline: none;
+    border-color: var(--wtb-primary);
+}
+
+.wtb-btn-delete-col {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--wtb-text-light);
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px 6px;
+    border-radius: 4px;
+    line-height: 1;
+    flex-shrink: 0;
+    transition: var(--wtb-transition);
+}
+
+.wtb-btn-delete-col:hover {
+    color: var(--wtb-danger);
+    background: var(--wtb-danger-bg);
+    border-color: var(--wtb-danger-border);
+}
+
+.wtb-th-add-col {
+    padding: 8px !important;
+    text-align: center;
+}
+
+.wtb-btn-add-col {
+    background: var(--wtb-primary-light);
+    color: var(--wtb-primary);
+    border: 1px dashed var(--wtb-primary-border);
+    padding: 6px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: var(--wtb-transition);
+}
+
+.wtb-btn-add-col:hover {
+    background: var(--wtb-primary);
+    color: #ffffff;
+    border-style: solid;
+}
+
+.wtb-cell-input {
+    width: 100%;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 0.88rem;
+    font-family: inherit;
+    min-width: 100px;
+    box-sizing: border-box;
+    transition: var(--wtb-transition);
+    background: #ffffff;
+    color: var(--wtb-text-main);
+}
+
+textarea.wtb-cell-input {
+    resize: vertical;
+    min-height: 36px;
+    display: block;
+    line-height: 1.4;
+}
+
+input.wtb-cell-input {
+    height: 36px;
+    display: block;
+}
+
+.wtb-cell-input:focus {
+    outline: none;
+    border-color: var(--wtb-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
+    background: #ffffff;
+}
+
+input.wtb-cell-input[type="number"] {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+}
+
+input.wtb-cell-input[type="url"] {
+    color: #2563eb;
+}
+
+input.wtb-cell-input[data-col-type="rating"] {
+    border-color: #fde68a;
+    background: #fffbeb;
+    text-align: center;
+    font-weight: 700;
+    color: #d97706;
+}
+
+.wtb-btn-delete-row {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--wtb-text-light);
+    transition: var(--wtb-transition);
+}
+
+.wtb-btn-delete-row:hover {
+    color: var(--wtb-danger);
+    background: var(--wtb-danger-bg);
+}
+
+.wtb-empty-rows-notice {
+    text-align: center;
+    color: var(--wtb-text-muted);
+    padding: 32px 16px;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.wtb-add-row-area {
+    margin-top: 16px;
+}
+
+.wtb-btn-add-row {
+    width: 100%;
+    padding: 10px;
+    background: #ffffff;
+    border: 2px dashed var(--wtb-border);
+    border-radius: var(--wtb-radius-sm);
+    color: var(--wtb-text-muted);
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--wtb-transition);
+}
+
+.wtb-btn-add-row:hover {
+    border-color: var(--wtb-primary);
+    color: var(--wtb-primary);
+    background: var(--wtb-primary-light);
+}
+
+.wtb-settings-panel {
+    background: var(--wtb-card-bg);
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius);
+    padding: 20px 22px;
+    box-shadow: var(--wtb-shadow-sm);
+    position: sticky;
+    top: 90px;
+}
+
+.wtb-settings-panel h2 {
+    margin: 0 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--wtb-border);
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--wtb-text-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wtb-settings-group {
+    margin-bottom: 16px;
+}
+
+.wtb-settings-group label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--wtb-text-muted);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.wtb-settings-group label:has(input[type="checkbox"]) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    font-size: 0.88rem;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--wtb-text-main);
+    cursor: pointer;
+}
+
+.wtb-settings-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--wtb-primary);
+    cursor: pointer;
+}
+
+.wtb-settings-group input[type="number"],
+.wtb-settings-group select {
+    padding: 7px 10px;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    font-size: 0.88rem;
+    width: 100%;
+    color: var(--wtb-text-main);
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: var(--wtb-transition);
+}
+
+.wtb-settings-group input[type="number"]:focus,
+.wtb-settings-group select:focus {
+    outline: none;
+    border-color: var(--wtb-primary);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.15);
+}
+
+.wtb-color-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.wtb-color-row input[type="color"] {
+    width: 38px;
+    height: 38px;
+    padding: 2px;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    cursor: pointer;
+    background: #ffffff;
+    flex-shrink: 0;
+}
+
+.wtb-color-text {
+    flex: 1;
+    padding: 7px 10px;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 0.88rem;
+    text-transform: uppercase;
+    color: var(--wtb-text-main);
+    transition: var(--wtb-transition);
+}
+
+.wtb-color-text:focus {
+    outline: none;
+    border-color: var(--wtb-primary);
+}
+
+.wtb-settings-panel hr {
+    margin: 18px 0;
+    border: none;
+    border-top: 1px solid var(--wtb-border);
+}
+
+.wtb-shortcode-info {
+    margin-top: 20px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: var(--wtb-radius-sm);
+    border: 1px solid var(--wtb-border);
+}
+
+.wtb-shortcode-info p {
+    margin: 0 0 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--wtb-text-muted);
+}
+
+.wtb-shortcode-info code {
+    display: block;
+    padding: 8px 10px;
+    background: #ffffff;
+    border: 1px solid var(--wtb-border);
+    border-radius: 6px;
+    font-size: 0.85rem;
+    word-break: break-all;
+    margin-bottom: 10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: var(--wtb-primary);
+}
+
+.wtb-btn-copy-shortcode {
+    width: 100%;
+    justify-content: center;
+}
+
+.wtb-new-table-card {
+    background: var(--wtb-card-bg);
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius-lg);
+    padding: 32px;
+    max-width: 640px;
+    margin: 30px auto;
+    box-shadow: var(--wtb-shadow-md);
+}
+
+.wtb-new-table-header {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.wtb-new-table-icon {
+    width: 56px;
+    height: 56px;
+    background: var(--wtb-primary-light);
+    color: var(--wtb-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 14px;
+}
+
+.wtb-new-table-icon .dashicons {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+}
+
+.wtb-new-table-header h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--wtb-text-dark);
+    margin: 0 0 6px;
+}
+
+.wtb-new-table-header p {
+    font-size: 0.9rem;
+    color: var(--wtb-text-muted);
+    margin: 0;
+}
+
+.wtb-form-group {
+    margin-bottom: 24px;
+}
+
+.wtb-form-group label {
+    display: block;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--wtb-text-dark);
+    margin-bottom: 8px;
+}
+
+.wtb-form-group input[type="text"] {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 1rem;
+    border: 1px solid var(--wtb-border);
+    border-radius: var(--wtb-radius-sm);
+    transition: var(--wtb-transition);
+}
+
+.wtb-form-group input[type="text"]:focus {
+    outline: none;
+    border-color: var(--wtb-primary);
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.wtb-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.wtb-elementor-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    background: #f8fafc;
+    border: 2px dashed var(--wtb-primary-border);
+    border-radius: var(--wtb-radius);
+    color: var(--wtb-text-muted);
+    text-align: center;
+    gap: 12px;
+}
+
+.wtb-elementor-placeholder .eicon-table {
+    font-size: 40px;
+    color: var(--wtb-primary);
+}
