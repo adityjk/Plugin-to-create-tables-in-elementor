@@ -109,49 +109,6 @@
         });
     }
 
-    // ── Taxonomy Filter Bar Click Handler ──────────────────────────────────
-    $(document).on('click', '.wtb-tax-btn', function (e) {
-        e.preventDefault();
-        var $btn     = $(this);
-        var $bar     = $btn.closest('.wtb-tax-filter-bar');
-        var targetId = $bar.data('table-id');
-        var term     = String($btn.data('term') || 'all');
-
-        $bar.find('.wtb-tax-btn').removeClass('active');
-        $btn.addClass('active');
-
-        var $table = targetId ? $('#' + targetId) : $bar.parent().find('.wtb-table');
-        if ( ! $table.length ) return;
-
-        if ( $.fn.DataTable && $.fn.DataTable.isDataTable($table) ) {
-            var dt = $table.DataTable();
-            if ( term === 'all' ) {
-                dt.draw();
-            } else {
-                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                    if ( settings.nTable.id !== $table.attr('id') ) {
-                        return true;
-                    }
-                    var $row = $(dt.row(dataIndex).node());
-                    var terms = ($row.attr('data-tax-terms') || '').split(' ');
-                    return terms.indexOf(term) !== -1;
-                });
-                dt.draw();
-                $.fn.dataTable.ext.search.pop();
-            }
-        } else {
-            $table.find('tbody tr').each(function () {
-                var $tr = $(this);
-                var terms = ($tr.attr('data-tax-terms') || '').split(' ');
-                if ( term === 'all' || terms.indexOf(term) !== -1 ) {
-                    $tr.show();
-                } else {
-                    $tr.hide();
-                }
-            });
-        }
-    });
-
     // ── Standard page load ──────────────────────────────────────────────────
     $(document).ready(function () {
         initScope( $(document) );

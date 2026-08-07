@@ -17,20 +17,13 @@ class WTB_Elementor_Widget extends Widget_Base {
     protected function register_controls() {
 
         // ==================================================================
-        // --- Section: Sumber Data & Pilih Tabel ---
-        $this->start_controls_section( 'content_section', [
-            'label' => __( 'Sumber Data & Pilih Tabel', 'wp-table-builder' ),
-            'tab'   => Controls_Manager::TAB_CONTENT,
-        ] );
+        // TAB CONTENT
+        // ==================================================================
 
-        $this->add_control( 'source_type', [
-            'label'   => __( 'Sumber Data Tabel', 'wp-table-builder' ),
-            'type'    => Controls_Manager::SELECT,
-            'options' => [
-                'static'  => __( 'Tabel Statis (Table Builder)', 'wp-table-builder' ),
-                'dynamic' => __( 'Dynamic Posts & Taxonomy Query', 'wp-table-builder' ),
-            ],
-            'default' => 'static',
+        // --- Section: Pilih Tabel ---
+        $this->start_controls_section( 'content_section', [
+            'label' => __( 'Pilih Tabel', 'wp-table-builder' ),
+            'tab'   => Controls_Manager::TAB_CONTENT,
         ] );
 
         $tables = get_posts( [
@@ -47,202 +40,10 @@ class WTB_Elementor_Widget extends Widget_Base {
         }
 
         $this->add_control( 'table_id', [
-            'label'     => __( 'Pilih Tabel Statis', 'wp-table-builder' ),
-            'type'      => Controls_Manager::SELECT,
-            'options'   => $options,
-            'default'   => '0',
-            'condition' => [ 'source_type' => 'static' ],
-        ] );
-
-        // --- Dynamic Post & Taxonomy Query Controls ---
-        $this->add_control( 'heading_dynamic_query', [
-            'label'     => __( 'Pengaturan Dynamic Query', 'wp-table-builder' ),
-            'type'      => Controls_Manager::HEADING,
-            'separator' => 'before',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $post_type_options = [];
-        $public_pts = get_post_types( [ 'public' => true ], 'objects' );
-        foreach ( $public_pts as $pt_slug => $pt_obj ) {
-            if ( $pt_slug !== 'wtb_table' && $pt_slug !== 'attachment' ) {
-                $post_type_options[ $pt_slug ] = $pt_obj->labels->name . ' (' . $pt_slug . ')';
-            }
-        }
-
-        $this->add_control( 'post_type', [
-            'label'     => __( 'Pilih Post Type', 'wp-table-builder' ),
-            'type'      => Controls_Manager::SELECT,
-            'options'   => $post_type_options,
-            'default'   => 'post',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $tax_options = [];
-        $public_taxes = get_taxonomies( [ 'public' => true ], 'objects' );
-        foreach ( $public_taxes as $tax_slug => $tax_obj ) {
-            $tax_options[ $tax_slug ] = $tax_obj->labels->name . ' (' . $tax_slug . ')';
-        }
-
-        $this->add_control( 'taxonomy', [
-            'label'     => __( 'Pilih Taxonomy', 'wp-table-builder' ),
-            'type'      => Controls_Manager::SELECT,
-            'options'   => $tax_options,
-            'default'   => 'category',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'tax_terms', [
-            'label'       => __( 'Slug / ID Term Kategori', 'wp-table-builder' ),
-            'type'        => Controls_Manager::TEXT,
-            'placeholder' => __( 'misal: berita, gadget (pisahkan koma)', 'wp-table-builder' ),
-            'description' => __( 'Kosongkan jika ingin menampilkan semua kategori.', 'wp-table-builder' ),
-            'condition'   => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'tax_operator', [
-            'label'     => __( 'Taxonomy Operator', 'wp-table-builder' ),
-            'type'      => Controls_Manager::SELECT,
-            'options'   => [
-                'IN'     => __( 'Termasuk (IN)', 'wp-table-builder' ),
-                'NOT IN' => __( 'Kecualikan (NOT IN)', 'wp-table-builder' ),
-                'AND'    => __( 'Harus Memenuhi Semua (AND)', 'wp-table-builder' ),
-            ],
-            'default'   => 'IN',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'posts_per_page', [
-            'label'     => __( 'Jumlah Data (Limit)', 'wp-table-builder' ),
-            'type'      => Controls_Manager::NUMBER,
-            'default'   => 10,
-            'min'       => -1,
-            'max'       => 100,
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'orderby', [
-            'label'     => __( 'Urutkan Berdasarkan (Order By)', 'wp-table-builder' ),
-            'type'      => Controls_Manager::SELECT,
-            'options'   => [
-                'date'       => __( 'Tanggal (Date)', 'wp-table-builder' ),
-                'title'      => __( 'Judul (Title)', 'wp-table-builder' ),
-                'ID'         => __( 'Post ID', 'wp-table-builder' ),
-                'modified'   => __( 'Tanggal Edit (Modified)', 'wp-table-builder' ),
-                'rand'       => __( 'Acak (Random)', 'wp-table-builder' ),
-                'menu_order' => __( 'Urutan Menu (Menu Order)', 'wp-table-builder' ),
-            ],
-            'default'   => 'date',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'order', [
-            'label'     => __( 'Arah Urutan (Order)', 'wp-table-builder' ),
-            'type'      => Controls_Manager::SELECT,
-            'options'   => [
-                'DESC' => __( 'Menurun (DESC)', 'wp-table-builder' ),
-                'ASC'  => __( 'Menaik (ASC)', 'wp-table-builder' ),
-            ],
-            'default'   => 'DESC',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        // --- Heading: Kolom Yang Ditampilkan ---
-        $this->add_control( 'heading_dynamic_cols', [
-            'label'     => __( 'Kolom Yang Ditampilkan', 'wp-table-builder' ),
-            'type'      => Controls_Manager::HEADING,
-            'separator' => 'before',
-            'condition' => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_img', [
-            'label'        => __( 'Tampilkan Gambar', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'yes',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_title', [
-            'label'        => __( 'Tampilkan Judul', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'yes',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_cats', [
-            'label'        => __( 'Tampilkan Kategori/Badge', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'yes',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_excerpt', [
-            'label'        => __( 'Tampilkan Ringkasan', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'yes',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_date', [
-            'label'        => __( 'Tampilkan Tanggal', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'yes',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_author', [
-            'label'        => __( 'Tampilkan Penulis', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'no',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'show_btn', [
-            'label'        => __( 'Tampilkan Tombol Detail', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'default'      => 'yes',
-            'return_value' => 'yes',
-            'condition'    => [ 'source_type' => 'dynamic' ],
-        ] );
-
-        $this->add_control( 'btn_text', [
-            'label'     => __( 'Teks Tombol Detail', 'wp-table-builder' ),
-            'type'      => Controls_Manager::TEXT,
-            'default'   => __( 'Detail', 'wp-table-builder' ),
-            'condition' => [
-                'source_type' => 'dynamic',
-                'show_btn'    => 'yes',
-            ],
-        ] );
-
-        $this->end_controls_section();
-
-        // --- Section: Frontend Taxonomy Filter Bar ---
-        $this->start_controls_section( 'tax_filter_section', [
-            'label' => __( 'Baris Filter Kategori (Taxonomy Filter Bar)', 'wp-table-builder' ),
-            'tab'   => Controls_Manager::TAB_CONTENT,
-        ] );
-
-        $this->add_control( 'show_tax_filter_bar', [
-            'label'        => __( 'Tampilkan Baris Filter Kategori di Atas Tabel', 'wp-table-builder' ),
-            'type'         => Controls_Manager::SWITCHER,
-            'label_on'     => __( 'Ya', 'wp-table-builder' ),
-            'label_off'    => __( 'Tidak', 'wp-table-builder' ),
-            'return_value' => 'yes',
-            'default'      => 'no',
-        ] );
-
-        $this->add_control( 'tax_filter_label_all', [
-            'label'     => __( 'Label Tombol Semua (All)', 'wp-table-builder' ),
-            'type'      => Controls_Manager::TEXT,
-            'default'   => __( 'Semua', 'wp-table-builder' ),
-            'condition' => [ 'show_tax_filter_bar' => 'yes' ],
+            'label'   => __( 'Pilih Tabel', 'wp-table-builder' ),
+            'type'    => Controls_Manager::SELECT,
+            'options' => $options,
+            'default' => '0',
         ] );
 
         $this->end_controls_section();
@@ -893,6 +694,15 @@ class WTB_Elementor_Widget extends Widget_Base {
 
     protected function render() {
         $settings = $this->get_settings_for_display();
+        $table_id = absint( $settings['table_id'] ?? 0 );
+
+        if ( ! $table_id ) {
+            echo '<div class="wtb-elementor-placeholder">';
+            echo '<span class="eicon-table" aria-hidden="true"></span>';
+            echo '<p>' . esc_html__( 'Pilih tabel di panel Elementor (tab Content).', 'wp-table-builder' ) . '</p>';
+            echo '</div>';
+            return;
+        }
 
         $prev_icon_html = '';
         if ( ! empty( $settings['prev_icon']['value'] ) ) {
@@ -910,10 +720,10 @@ class WTB_Elementor_Widget extends Widget_Base {
 
         $override_settings = [
             // Navigation / pagination
-            'prev_text'       => $settings['prev_text']        ?? 'Sebelumnya',
-            'next_text'       => $settings['next_text']        ?? 'Selanjutnya',
-            'prev_icon_html'  => $prev_icon_html,
-            'next_icon_html'  => $next_icon_html,
+            'prev_text'      => $settings['prev_text']      ?? 'Sebelumnya',
+            'next_text'      => $settings['next_text']      ?? 'Selanjutnya',
+            'prev_icon_html' => $prev_icon_html,
+            'next_icon_html' => $next_icon_html,
             'pagination_type' => $settings['pagination_type'] ?? 'numbers',
 
             // Colors — use Elementor values as the definitive source
@@ -922,45 +732,6 @@ class WTB_Elementor_Widget extends Widget_Base {
             'row_stripe'       => ( ( $settings['override_row_stripe'] ?? 'yes' ) === 'yes' ),
             'row_stripe_color' => $settings['override_stripe_color'] ?? '#f5f5f5',
         ];
-
-        $source_type = $settings['source_type'] ?? 'static';
-        if ( $source_type === 'dynamic' ) {
-            $query_args = [
-                'post_type'      => $settings['post_type']      ?? 'post',
-                'taxonomy'       => $settings['taxonomy']       ?? 'category',
-                'terms'          => $settings['tax_terms']      ?? '',
-                'operator'       => $settings['tax_operator']   ?? 'IN',
-                'posts_per_page' => $settings['posts_per_page'] ?? 10,
-                'orderby'        => $settings['orderby']        ?? 'date',
-                'order'          => $settings['order']          ?? 'DESC',
-            ];
-
-            $display_options = [
-                'show_img'            => ( ( $settings['show_img']     ?? 'yes' ) === 'yes' ),
-                'show_title'          => ( ( $settings['show_title']   ?? 'yes' ) === 'yes' ),
-                'show_cats'           => ( ( $settings['show_cats']    ?? 'yes' ) === 'yes' ),
-                'show_excerpt'        => ( ( $settings['show_excerpt'] ?? 'yes' ) === 'yes' ),
-                'show_date'           => ( ( $settings['show_date']    ?? 'yes' ) === 'yes' ),
-                'show_author'         => ( ( $settings['show_author']  ?? 'no'  ) === 'yes' ),
-                'show_btn'            => ( ( $settings['show_btn']     ?? 'yes' ) === 'yes' ),
-                'btn_text'            => $settings['btn_text']         ?? 'Detail',
-                'show_tax_filter_bar' => ( ( $settings['show_tax_filter_bar'] ?? 'no' ) === 'yes' ),
-                'tax_filter_label_all'=> $settings['tax_filter_label_all'] ?? 'Semua',
-            ];
-
-            echo WTB_Render::render_dynamic_table( $query_args, $display_options, $override_settings );
-            return;
-        }
-
-        $table_id = absint( $settings['table_id'] ?? 0 );
-
-        if ( ! $table_id ) {
-            echo '<div class="wtb-elementor-placeholder">';
-            echo '<span class="eicon-table" aria-hidden="true"></span>';
-            echo '<p>' . esc_html__( 'Pilih tabel di panel Elementor (tab Content).', 'wp-table-builder' ) . '</p>';
-            echo '</div>';
-            return;
-        }
 
         echo WTB_Render::render_table( $table_id, $override_settings );
     }
