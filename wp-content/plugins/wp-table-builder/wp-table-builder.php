@@ -42,6 +42,31 @@ add_action( 'plugins_loaded', function () {
         $widgets_manager->register( new WTB_Elementor_Widget() );
     } );
 
+    // Preconnect to Google Fonts CDN to speed up font dropdown loading in Elementor Editor
+    add_action( 'elementor/editor/head', function() {
+        echo '<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>' . "\n";
+        echo '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' . "\n";
+    } );
+
+    // Automatically map WordPress 6.5+ Font Library custom fonts (like Midstar) to Elementor Typography dropdown
+    add_filter( 'elementor/fonts/additional_fonts', function( $fonts ) {
+        $wp_fonts = get_posts( [
+            'post_type'        => 'wp_font_family',
+            'post_status'      => 'publish',
+            'posts_per_page'   => -1,
+            'suppress_filters' => true,
+        ] );
+        if ( ! empty( $wp_fonts ) ) {
+            foreach ( $wp_fonts as $font_post ) {
+                $font_name = trim( $font_post->post_title );
+                if ( $font_name && ! isset( $fonts[ $font_name ] ) ) {
+                    $fonts[ $font_name ] = 'custom';
+                }
+            }
+        }
+        return $fonts;
+    } );
+
     // Enqueue DataTables & frontend assets inside the Elementor PREVIEW iframe
     // (not the admin panel) so the table widget shows pagination/search/length.
     add_action( 'elementor/preview/enqueue_scripts', function () {

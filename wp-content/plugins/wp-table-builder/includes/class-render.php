@@ -234,4 +234,210 @@ class WTB_Render {
             }, $columns ),
         ] );
     }
+
+    public static function render_dynamic_table( array $query_args = [], array $display_options = [], array $override_settings = [] ): string {
+        $post_type      = sanitize_text_field( $query_args['post_type'] ?? 'post' );
+        $taxonomy       = sanitize_text_field( $query_args['taxonomy'] ?? 'category' );
+        $terms_input    = $query_args['terms'] ?? '';
+        $operator       = strtoupper( sanitize_text_field( $query_args['operator'] ?? 'IN' ) );
+        $posts_per_page = intval( $query_args['posts_per_page'] ?? 10 );
+        $orderby        = sanitize_text_field( $query_args['orderby'] ?? 'date' );
+        $order          = strtoupper( sanitize_text_field( $query_args['order'] ?? 'DESC' ) );
+
+        if ( ! in_array( $operator, [ 'IN', 'NOT IN', 'AND' ], true ) ) {
+            $operator = 'IN';
+        }
+
+        $args = [
+            'post_type'      => $post_type,
+            'posts_per_page' => $posts_per_page,
+            'orderby'        => $orderby,
+            'order'          => $order,
+            'post_status'    => 'publish',
+        ];
+
+        if ( ! empty( $taxonomy ) && ! empty( $terms_input ) ) {
+            $terms_list = is_array( $terms_input ) ? $terms_input : array_map( 'trim', explode( ',', (string) $terms_input ) );
+            $terms_list = array_filter( $terms_list );
+            if ( ! empty( $terms_list ) ) {
+                $field = is_numeric( reset( $terms_list ) ) ? 'term_id' : 'slug';
+                if ( $field === 'term_id' ) {
+                    $terms_list = array_map( 'absint', $terms_list );
+                }
+                $args['tax_query'] = [
+                    [
+                        'taxonomy' => $taxonomy,
+                        'field'    => $field,
+                        'terms'    => $terms_list,
+                        'operator' => $operator,
+                    ],
+                ];
+            }
+        }
+
+        $query = new WP_Query( $args );
+        if ( ! $query->have_posts() ) {
+            return '<p class="wtb-no-data">' . esc_html__( 'Tidak ada postingan yang ditemukan.', 'wp-table-builder' ) . '</p>';
+        }
+
+        static $dynamic_counter = 9000;
+        $dynamic_counter++;
+        $table_id = $dynamic_counter;
+
+        $settings = WTB_Sanitizer::table_settings( $override_settings );
+        if ( ! empty( $override_settings ) ) {
+            $settings = array_merge( $settings, $override_settings );
+        }
+
+        $show_img     = $display_options['show_img']     ?? true;
+        $show_title   = $display_options['show_title']   ?? true;
+        $show_cats    = $display_options['show_cats']    ?? true;
+        $show_excerpt = $display_options['show_excerpt'] ?? true;
+        $show_date    = $display_options['show_date']    ?? true;
+        $show_author  = $display_options['show_author']  ?? false;
+        $show_btn     = $display_options['show_btn']     ?? true;
+        $btn_label    = esc_html( $display_options['btn_text'] ?? __( 'Detail', 'wp-table-builder' ) );
+
+        $columns = [];
+        if ( $show_img )     $columns[] = [ 'id' => 'img',     'label' => __( 'Gambar', 'wp-table-builder' ),   'data_type' => 'image' ];
+        if ( $show_title )   $columns[] = [ 'id' => 'title',   'label' => __( 'Judul', 'wp-table-builder' ),    'data_type' => 'link' ];
+        if ( $show_cats )    $columns[] = [ 'id' => 'cats',    'label' => __( 'Kategori', 'wp-table-builder' ), 'data_type' => 'badge' ];
+        if ( $show_excerpt ) $columns[] = [ 'id' => 'excerpt', 'label' => __( 'Ringkasan', 'wp-table-builder' ),'data_type' => 'text' ];
+        if ( $show_date )    $columns[] = [ 'id' => 'date',    'label' => __( 'Tanggal', 'wp-table-builder' ),  'data_type' => 'text' ];
+        if ( $show_author )  $columns[] = [ 'id' => 'author',  'label' => __( 'Penulis', 'wp-table-builder' ),  'data_type' => 'text' ];
+        if ( $show_btn )     $columns[] = [ 'id' => 'button',  'label' => __( 'Aksi', 'wp-table-builder' ),     'data_type' => 'button' ];
+
+        self::enqueue_frontend_assets( $table_id, $settings, $columns, false );
+
+        $css = self::generate_table_css( $table_id, $settings );
+
+        $used_terms = [];
+        if ( ! empty( $taxonomy ) ) {
+            foreach ( $query->posts as $p ) {
+                $terms = get_the_terms( $p->ID, $taxonomy );
+                if ( ! empty( $terms ) && ! is_wp_error( $terms ) ) {
+                    foreach ( $terms as $t ) {
+                        $used_terms[ $t->slug ] = $t->name;
+                    }
+                }
+            }
+        }
+
+        $show_filter_bar = ! empty( $display_options['show_tax_filter_bar'] ) && ! empty( $used_terms );
+        $all_label       = esc_html( $display_options['tax_filter_label_all'] ?? __( 'Semua', 'wp-table-builder' ) );
+
+        ob_start();
+        echo '<style>' . $css . '</style>';
+
+        echo '<div class="wtb-table-wrap wtb-wrap-' . esc_attr( $table_id ) . '" id="wtb-wrap-' . esc_attr( $table_id ) . '">';
+
+        if ( $show_filter_bar ) {
+            echo '<div class="wtb-tax-filter-bar" data-table-id="wtb-table-' . esc_attr( $table_id ) . '">';
+            echo '<button type="button" class="wtb-tax-btn active" data-term="all">' . $all_label . '</button>';
+            foreach ( $used_terms as $slug => $name ) {
+                echo '<button type="button" class="wtb-tax-btn" data-term="' . esc_attr( $slug ) . '">' . esc_html( $name ) . '</button>';
+            }
+            echo '</div>';
+        }
+
+        echo '<div class="wtb-table-scroll">';
+        echo '<table class="wtb-table" id="wtb-table-' . esc_attr( $table_id ) . '"';
+        echo ' data-table-id="' . esc_attr( $table_id ) . '"';
+        echo ' data-server-side="0"';
+        echo ' data-enable-search="' . ( ( $settings['enable_search'] ?? true ) ? '1' : '0' ) . '"';
+        echo ' data-enable-sort="' . ( ( $settings['enable_sort'] ?? true ) ? '1' : '0' ) . '"';
+        echo ' data-responsive="' . esc_attr( $settings['responsive_mode'] ?? 'scroll' ) . '"';
+        if ( isset( $settings['prev_text'] ) )       echo ' data-prev-text="' . esc_attr( $settings['prev_text'] ) . '"';
+        if ( isset( $settings['next_text'] ) )       echo ' data-next-text="' . esc_attr( $settings['next_text'] ) . '"';
+        if ( ! empty( $settings['prev_icon_html'] ) ) echo ' data-prev-icon-html="' . esc_attr( $settings['prev_icon_html'] ) . '"';
+        if ( ! empty( $settings['next_icon_html'] ) ) echo ' data-next-icon-html="' . esc_attr( $settings['next_icon_html'] ) . '"';
+        if ( isset( $settings['pagination_type'] ) ) echo ' data-pagination-type="' . esc_attr( $settings['pagination_type'] ) . '"';
+        echo '>';
+
+        echo '<thead><tr>';
+        foreach ( $columns as $col ) {
+            echo '<th data-col-id="' . esc_attr( $col['id'] ) . '" data-type="' . esc_attr( $col['data_type'] ) . '">';
+            echo esc_html( $col['label'] );
+            echo '</th>';
+        }
+        echo '</tr></thead>';
+
+        echo '<tbody>';
+        foreach ( $query->posts as $p ) {
+            $post_id   = $p->ID;
+            $permalink = get_permalink( $post_id );
+
+            $row_term_slugs = [];
+            if ( ! empty( $taxonomy ) ) {
+                $p_terms = get_the_terms( $post_id, $taxonomy );
+                if ( ! empty( $p_terms ) && ! is_wp_error( $p_terms ) ) {
+                    foreach ( $p_terms as $t ) {
+                        $row_term_slugs[] = $t->slug;
+                    }
+                }
+            }
+            $term_slugs_attr = implode( ' ', $row_term_slugs );
+
+            echo '<tr data-tax-terms="' . esc_attr( $term_slugs_attr ) . '">';
+
+            foreach ( $columns as $col ) {
+                echo '<td>';
+                switch ( $col['id'] ) {
+                    case 'img':
+                        $thumb = get_the_post_thumbnail_url( $post_id, 'thumbnail' );
+                        if ( $thumb ) {
+                            echo '<img src="' . esc_url( $thumb ) . '" alt="' . esc_attr( $p->post_title ) . '" class="wtb-cell-img" loading="lazy">';
+                        } else {
+                            echo '<div class="wtb-cell-img-placeholder">—</div>';
+                        }
+                        break;
+
+                    case 'title':
+                        echo '<a href="' . esc_url( $permalink ) . '" style="color:#1e293b; font-weight:600; text-decoration:none;">' . esc_html( $p->post_title ) . '</a>';
+                        break;
+
+                    case 'cats':
+                        if ( ! empty( $p_terms ) && ! is_wp_error( $p_terms ) ) {
+                            $badges = [];
+                            foreach ( $p_terms as $t ) {
+                                $badges[] = '<span class="wtb-cell-badge">' . esc_html( $t->name ) . '</span>';
+                            }
+                            echo implode( ' ', $badges );
+                        } else {
+                            echo '—';
+                        }
+                        break;
+
+                    case 'excerpt':
+                        $excerpt = get_the_excerpt( $post_id );
+                        echo esc_html( wp_trim_words( $excerpt, 12, '...' ) );
+                        break;
+
+                    case 'date':
+                        echo esc_html( get_the_date( '', $post_id ) );
+                        break;
+
+                    case 'author':
+                        echo esc_html( get_the_author_meta( 'display_name', $p->post_author ) );
+                        break;
+
+                    case 'button':
+                        echo '<a href="' . esc_url( $permalink ) . '" class="wtb-cell-btn">' . $btn_label . '</a>';
+                        break;
+                }
+                echo '</td>';
+            }
+
+            echo '</tr>';
+        }
+        echo '</tbody>';
+
+        echo '</table>';
+        echo '</div>';
+        echo '</div>';
+
+        wp_reset_postdata();
+
+        return ob_get_clean();
+    }
 }
