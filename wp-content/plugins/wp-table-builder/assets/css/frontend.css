@@ -6,7 +6,7 @@
     padding: 0;
     border: none;
     overflow: hidden;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: inherit;
 }
 
 .wtb-table-wrap .dataTables_wrapper {
@@ -213,7 +213,6 @@
 }
 
 .wtb-table thead tr th {
-    text-align: left;
     font-weight: 600;
     padding: 14px 16px;
     white-space: nowrap;

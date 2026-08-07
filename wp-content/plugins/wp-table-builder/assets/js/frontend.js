@@ -117,17 +117,30 @@
     // ── Elementor editor preview init ────────────────────────────────────────
     // Register the widget-ready hook so DataTables initializes every time the
     // WTB widget is rendered (or re-rendered) inside the Elementor preview iframe.
+    var elementorInitTimers = {};
+
     function registerElementorHook() {
         if ( ! window.elementorFrontend ) return;
 
         window.elementorFrontend.hooks.addAction(
             'frontend/element_ready/wtb_table.default',
             function ($scope) {
-                // Short delay lets Elementor finish injecting its inline styles
-                // before DataTables measures column widths.
-                setTimeout(function () {
+                var scopeId = $scope.data('id') || 'default';
+                if ( elementorInitTimers[scopeId] ) {
+                    clearTimeout(elementorInitTimers[scopeId]);
+                }
+
+                var $table = $scope.find('.wtb-table');
+                if ( $table.length && $.fn.DataTable && $.fn.DataTable.isDataTable($table) ) {
+                    try {
+                        $table.DataTable().columns.adjust();
+                    } catch (e) {}
+                }
+
+                elementorInitTimers[scopeId] = setTimeout(function () {
                     initScope($scope);
-                }, 200);
+                    delete elementorInitTimers[scopeId];
+                }, 250);
             }
         );
     }

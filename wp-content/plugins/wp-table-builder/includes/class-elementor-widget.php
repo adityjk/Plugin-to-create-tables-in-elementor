@@ -247,7 +247,7 @@ class WTB_Elementor_Widget extends Widget_Base {
         ] );
 
         $this->add_responsive_control( 'override_alignment', [
-            'label'   => __( 'Alignment', 'wp-table-builder' ),
+            'label'   => __( 'Alignment Teks Tabel', 'wp-table-builder' ),
             'type'    => Controls_Manager::CHOOSE,
             'options' => [
                 'left' => [
@@ -262,9 +262,40 @@ class WTB_Elementor_Widget extends Widget_Base {
                     'title' => __( 'Right', 'wp-table-builder' ),
                     'icon'  => 'eicon-text-align-right',
                 ],
+                'justify' => [
+                    'title' => __( 'Justify', 'wp-table-builder' ),
+                    'icon'  => 'eicon-text-align-justify',
+                ],
             ],
             'selectors' => [
-                '{{WRAPPER}} .wtb-table-wrap' => 'margin-left: {{VALUE}} == "center" ? auto : ( {{VALUE}} == "right" ? auto : 0 ); margin-right: {{VALUE}} == "center" ? auto : ( {{VALUE}} == "left" ? auto : 0 );',
+                '{{WRAPPER}} .wtb-table th, {{WRAPPER}} .wtb-table td' => 'text-align: {{VALUE}} !important;',
+            ],
+        ] );
+
+        $this->add_responsive_control( 'table_position', [
+            'label'   => __( 'Posisi Tabel (Wrapper)', 'wp-table-builder' ),
+            'type'    => Controls_Manager::CHOOSE,
+            'options' => [
+                'left' => [
+                    'title' => __( 'Left', 'wp-table-builder' ),
+                    'icon'  => 'eicon-h-align-left',
+                ],
+                'center' => [
+                    'title' => __( 'Center', 'wp-table-builder' ),
+                    'icon'  => 'eicon-h-align-center',
+                ],
+                'right' => [
+                    'title' => __( 'Right', 'wp-table-builder' ),
+                    'icon'  => 'eicon-h-align-right',
+                ],
+            ],
+            'selectors_dictionary' => [
+                'left'   => 'margin-left: 0 !important; margin-right: auto !important;',
+                'center' => 'margin-left: auto !important; margin-right: auto !important;',
+                'right'  => 'margin-left: auto !important; margin-right: 0 !important;',
+            ],
+            'selectors' => [
+                '{{WRAPPER}} .wtb-table-wrap' => '{{VALUE}}',
             ],
         ] );
 
@@ -377,7 +408,7 @@ class WTB_Elementor_Widget extends Widget_Base {
             [
                 'name'     => 'override_typography',
                 'label'    => __( 'Tipografi Tabel (Umum)', 'wp-table-builder' ),
-                'selector' => '{{WRAPPER}} .wtb-table, {{WRAPPER}} .wtb-table th, {{WRAPPER}} .wtb-table td',
+                'selector' => '{{WRAPPER}} .wtb-table-wrap, {{WRAPPER}} .wtb-table, {{WRAPPER}} .wtb-table th, {{WRAPPER}} .wtb-table td, {{WRAPPER}} .dataTables_wrapper',
             ]
         );
 
