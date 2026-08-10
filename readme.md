@@ -26,14 +26,36 @@
 
 Karena plugin ini bersifat Open Source dan berada di GitHub, Anda bisa menginstalnya dengan cara berikut:
 
+> **⚠️ PENTING:** Jangan gunakan tombol hijau **"Code -> Download ZIP"** bawaan GitHub. File zip tersebut adalah *source code* mentah dan akan memunculkan error *"No valid plugins were found"* saat diunggah ke WordPress.
+
 1. Kunjungi halaman repositori GitHub plugin ini.
 2. Di sebelah kanan, cari bagian **Releases** dan klik versi rilis terbaru.
-3. Unduh file `wp-table-builder-X.X.X.zip` yang ada di bagian *Assets*.
+3. Di bagian paling bawah halaman rilis tersebut, terdapat bagian bernama **Assets**. Unduh file `wp-table-builder-X.X.X.zip` dari sana. **Ini adalah file instalasi yang benar.**
 4. Masuk ke Dashboard WordPress Anda, lalu navigasi ke **Plugins > Add New Plugin** (Tambah Baru).
 5. Klik tombol **Upload Plugin** (Unggah Plugin) di bagian atas halaman.
-6. Pilih file `.zip` yang baru saja Anda unduh, lalu klik **Install Now** (Instal Sekarang).
+6. Pilih file `.zip` yang baru saja Anda unduh dari *Releases*, lalu klik **Install Now** (Instal Sekarang).
 7. Setelah instalasi selesai, klik **Activate Plugin** (Aktifkan Plugin).
 8. Selesai! Menu **Table Builder** sekarang akan muncul di sidebar kiri admin WordPress Anda.
+
+### 🛠️ Cara Build File ZIP Secara Manual (Khusus Developer)
+
+Jika Anda melakukan *clone* repositori ini (men-download source code) untuk memodifikasi kode secara mandiri, Anda tidak bisa langsung mengunggah foldernya ke WordPress. Anda harus mem-*build* file ZIP yang bersih (tanpa file *development* seperti Docker, Git, dll) menggunakan script bawaan.
+
+**Prasyarat**: Komputer Anda harus memiliki **Python 3**.
+
+1. Clone repositori ini ke komputer lokal Anda:
+   ```bash
+   git clone https://github.com/USERNAME/table-plugin.git
+   cd table-plugin
+   ```
+2. Modifikasi kode sesuai kebutuhan Anda.
+3. Jika sudah selesai, jalankan script *packager* di terminal:
+   ```bash
+   ./package.sh
+   # atau bisa juga menjalankan: python3 package.py
+   ```
+4. Script akan membuat folder baru bernama `dist/`. Di dalamnya akan terdapat file instalasi `.zip` (contoh: `wp-table-builder-1.1.0.zip`).
+5. File ZIP dari folder `dist/` inilah yang valid dan siap diunggah ke Dashboard WordPress.
 
 ---
 
