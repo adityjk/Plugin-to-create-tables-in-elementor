@@ -9,7 +9,7 @@ Dokumen ini berisi dokumentasi dan review komprehensif atas seluruh fungsi, arsi
 | Parameter | Detail |
 |---|---|
 | **Nama Plugin** | WP Table Builder |
-| **Versi** | 1.0.7 |
+| **Versi** | 1.1.0 |
 | **Teknologi Backend** | PHP 7.4+ / WordPress REST API / Custom Database Tables |
 | **Integrasi Page Builder** | Elementor Widget (`\Elementor\Widget_Base`), Gutenberg Block (`wtb/table`), Shortcode |
 | **Frontend Renderer** | DataTables.js (Client-side & Server-side Processing) + Vanilla CSS/JS |
@@ -118,9 +118,46 @@ Namespace: `wtb/v1`
 
 ---
 
-## ✅ Kesimpulan & Rekomendasi
+## 🚀 8. Fitur Lanjutan (Phase 2)
+
+### 8.1 Export & Import Data (CSV)
+Memungkinkan admin untuk melakukan pencadangan (backup) atau manipulasi data masal.
+- **Export CSV**: Endpoint `/tables/{id}/export_csv` akan mem-parsing `cells_data` ke dalam format CSV dengan penambahan penanda BOM (Byte Order Mark) UTF-8, sehingga ketika dibuka di Microsoft Excel karakter tidak akan menjadi *garbled* (rusak).
+- **Import CSV**: Endpoint `/tables/{id}/import_csv` menerima file CSV (via Form Data) dan melakukan pencocokan nama header CSV dengan label kolom yang ada di database, memastikan agar data masuk ke kolom yang tepat secara dinamis meskipun urutan di CSV berbeda.
+**Cara Penggunaan**: 
+Di halaman editor tabel ("Tabel Baru" / "Edit Tabel"), terdapat tombol **"Export CSV"** dan **"Import CSV"** di pojok kanan atas. Klik *Export* untuk mengunduh, atau *Import* untuk mengunggah file CSV.
+
+### 8.2 Server-Side Processing untuk WP Posts
+Ketika admin mengatur **Data Source** menjadi "WordPress Posts" (`wp_posts`), sistem akan memeriksa apakah `posts_limit` diatur sebagai unlimited (`-1`) atau lebih dari batas limit konfigurasi server. Jika ya, plugin akan otomatis menggunakan mode Server-Side.
+- **Efisiensi Memori**: Alih-alih melakukan `WP_Query` untuk 5.000 post (yang dapat memakan memori berlebih/fatal error), sistem hanya akan query sejumlah *Length* per halaman (misal 10 atau 25 data).
+- **DataTables AJAX Integrasi**: Parameter pencarian dan paging dari DataTables AJAX langsung dipetakan ke argument `offset` dan `posts_per_page` pada `WP_Query`.
+**Cara Penggunaan**: 
+Set sumber data ke "WordPress Posts". Pagination dan pencarian akan otomatis ditangani secara cepat tanpa membebani browser pengunjung.
+
+### 8.3 Advanced Column Filters (Pencarian Per-Kolom Spesifik)
+Memberikan kemampuan kepada pengguna untuk tidak hanya mencari secara global (seluruh tabel), melainkan pencarian yang difilter khusus pada kolom tertentu (sangat berguna seperti di Google Sheets).
+- **Tipe Filter**: Kolom dapat diatur apakah memiliki filter "Select Dropdown", "Text Input", atau "Tidak Ada".
+- **Eksekusi Server-Side (`JSON_EXTRACT`)**: Ketika *Server-Side Processing* aktif untuk tabel manual, pencarian dikirim secara per-kolom (lewat format API DataTables). Plugin mengekstrak key kolom JSON di MySQL menggunakan perintah MySQL modern `JSON_UNQUOTE(JSON_EXTRACT(cells_data, '$.\"COL_ID\"')) LIKE %s`.
+- **Eksekusi WP Posts (`Tax Query`)**: Untuk postingan WordPress, pencarian pada dropdown/teks filter spesifik ditranslasikan menjadi argument `tax_query` di `WP_Query` secara dinamis.
+**Cara Penggunaan**:
+1. Edit kolom di Admin Builder.
+2. Pada bagian bawah pengaturan kolom akan ada dropdown **Filter Tipe**. Pilih `Select Dropdown` (untuk pilihan kategori/tag) atau `Text Input` (untuk kolom pencarian teks bebas).
+3. Simpan tabel, lalu lihat frontend, kolom tersebut akan memiliki form pencarian/dropdown tersendiri.
+
+### 8.4 Anti-Spam (Honeypot Validation)
+Sistem pengisian *built-in form* pada tabel kini dilindungi menggunakan teknik Honeypot untuk menangkal pengiriman spam bot tanpa merepotkan manusia (tanpa CAPTCHA).
+- **Implementasi**: Menambahkan field teks `<input type="text" name="wtb_website_url">` ke dalam form HTML.
+- **Penyembunyian CSS & Accessibility**: Elemen ini disembunyikan via CSS (`display: none !important`) dan diputus dari indeks *tab* (`tabindex="-1"`), sehingga pengguna *human* tidak akan pernah melihat/mengisinya.
+- **Validasi Endpoint**: Di `submit_form_data` (REST API), sistem mengecek `if ( ! empty( $params['wtb_website_url'] ) )`. Jika terisi, itu dipastikan bot.
+**Cara Penggunaan**:
+Aktifkan fitur "Pengisian Form Frontend" di opsi pengaturan tabel. Proteksi Anti-Spam (Honeypot) sudah langsung terpasang otomatis di latar belakang tanpa setelan tambahan.
+
+---
+
+## ✅ 9. Kesimpulan & Rekomendasi
 
 Plugin **WP Table Builder** memiliki arsitektur yang solid, aman, dan kaya fitur:
 1. **Performa Terjamin**: Skema JSON-per-row + Server-side AJAX threshold menjaga performa situs tetap cepat meski tabel berisi ribuan data.
 2. **Fleksibilitas Integrasi**: Mendukung Gutenberg, Elementor Widget, Shortcode, serta Webhook Elementor Form.
 3. **Desain Modern**: Header taxonomy filter dan file preview modal memberikan UX sekelas aplikasi modern.
+4. **Keamanan & Skalabilitas**: Pembersihan Input yang ketat, perlindungan Anti-Spam (Honeypot), dan integrasi penuh dengan batasan memori WordPress melalui fitur *Server-Side Processing*.

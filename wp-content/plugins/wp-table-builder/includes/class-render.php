@@ -34,6 +34,7 @@ class WTB_Render {
             $col['image_size']     = sanitize_text_field( $col_settings['image_size'] ?? 'thumbnail' );
             $col['image_custom_w'] = absint( $col_settings['image_custom_w'] ?? 100 );
             $col['image_custom_h'] = absint( $col_settings['image_custom_h'] ?? 100 );
+            $col['filter_type']    = sanitize_text_field( $col_settings['filter_type'] ?? '' );
             unset($col['settings']);
             return $col;
         }, $columns_raw );
@@ -42,22 +43,26 @@ class WTB_Render {
 
         $data_source = $settings['data_source'] ?? 'manual';
         $rows = [];
-        $server_side = false; // Disable server-side for WP Posts for now or handle it differently
+        $server_side = false;
 
         if ( $data_source === 'wp_posts' ) {
             $post_type = $settings['post_type'] ?? 'post';
             $limit     = (int) ($settings['posts_limit'] ?? 10);
             
-            $query_args = [
-                'post_type'      => $post_type,
-                'posts_per_page' => $limit,
-                'post_status'    => 'publish',
-            ];
+            // Server side mode for WP posts if limit is high or -1
+            $server_side = ( $limit === -1 || $limit > (int) $settings['server_side_threshold'] );
             
-            $wp_query = new WP_Query( $query_args );
-            $row_index = 0;
-            
-            if ( $wp_query->have_posts() ) {
+            if ( ! $server_side ) {
+                $query_args = [
+                    'post_type'      => $post_type,
+                    'posts_per_page' => $limit,
+                    'post_status'    => 'publish',
+                ];
+                
+                $wp_query = new WP_Query( $query_args );
+                $row_index = 0;
+                
+                if ( $wp_query->have_posts() ) {
                 while ( $wp_query->have_posts() ) {
                     $wp_query->the_post();
                     $post_id = get_the_ID();
@@ -107,6 +112,7 @@ class WTB_Render {
                         'sort_order' => $row_index,
                     ];
                     $row_index++;
+                }
                 }
                 wp_reset_postdata();
             }
@@ -158,18 +164,25 @@ class WTB_Render {
         $target_col_id = (string) ( $settings['taxonomy_filter_column'] ?? '' );
         foreach ( $columns as $col ) {
             $col_id_str = (string) $col['id'];
+            $filter_type = $col['filter_type'] ?? '';
+            
+            // Legacy fallback for taxonomy filter
             $is_tax_col = ! empty( $settings['enable_taxonomy_filter'] ) &&
                           ( $target_col_id === '' || $target_col_id === $col_id_str );
+            
+            if ( $is_tax_col && $filter_type === '' ) {
+                $filter_type = 'select';
+            }
 
-            echo '<th data-col-id="' . esc_attr( $col['id'] ) . '" data-type="' . esc_attr( $col['data_type'] ) . '" class="' . ( $is_tax_col ? 'wtb-th-has-filter' : '' ) . '">';
+            echo '<th data-col-id="' . esc_attr( $col['id'] ) . '" data-type="' . esc_attr( $col['data_type'] ) . '" class="' . ( $filter_type !== '' ? 'wtb-th-has-filter' : '' ) . '">';
             echo '<div class="wtb-th-inner">';
             echo '<span class="wtb-th-label-text">' . esc_html( $col['label'] ) . '</span>';
 
-            if ( $is_tax_col ) {
+            if ( $filter_type === 'select' ) {
                 echo '<div class="wtb-header-tax-wrap" onclick="event.stopPropagation();">';
                 // Google Sheets style Filter Icon
                 echo '<svg class="wtb-tax-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>';
-                echo '<select class="wtb-header-tax-select" data-filter-col-id="' . esc_attr( $col['id'] ) . '" title="' . esc_attr__( 'Filter Kategori', 'wp-table-builder' ) . '">';
+                echo '<select class="wtb-header-tax-select wtb-header-filter wtb-filter-select" data-filter-col-id="' . esc_attr( $col['id'] ) . '" title="' . esc_attr__( 'Filter', 'wp-table-builder' ) . '">';
                 echo '<option value="">' . esc_html__( 'Semua', 'wp-table-builder' ) . '</option>';
 
                 if ( ! $server_side ) {
@@ -192,6 +205,11 @@ class WTB_Render {
                     }
                 }
                 echo '</select>';
+                echo '</div>';
+            } elseif ( $filter_type === 'text' ) {
+                echo '<div class="wtb-header-tax-wrap wtb-header-text-filter-wrap" onclick="event.stopPropagation();">';
+                echo '<svg class="wtb-tax-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
+                echo '<input type="text" class="wtb-header-filter wtb-filter-text" data-filter-col-id="' . esc_attr( $col['id'] ) . '" placeholder="' . esc_attr__( 'Cari...', 'wp-table-builder' ) . '">';
                 echo '</div>';
             }
 
@@ -258,6 +276,7 @@ class WTB_Render {
         echo '</div>';
         echo '<form class="wtb-user-submit-form" data-table-id="' . esc_attr( $table_id ) . '" data-rest-url="' . esc_url_raw( rest_url( 'wtb/v1/tables/' . $table_id . '/submit' ) ) . '">';
         echo '<div class="wtb-form-response-msg" style="display:none;"></div>';
+        echo '<input type="text" name="wtb_website_url" style="display:none !important;" tabindex="-1" autocomplete="off">'; // Anti-spam Honeypot
 
         echo '<div class="wtb-form-grid">';
         foreach ( $columns as $col ) {
