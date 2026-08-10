@@ -58,6 +58,13 @@ class WTB_Rest_Controller {
             'permission_callback' => '__return_true',
             'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
         ] );
+
+        register_rest_route( self::NAMESPACE, '/tables/(?P<id>\d+)/submit', [
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => [ __CLASS__, 'submit_form_data' ],
+            'permission_callback' => '__return_true',
+            'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
+        ] );
     }
 
     public static function admin_permission(): bool {
@@ -90,13 +97,25 @@ class WTB_Rest_Controller {
             return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wp-table-builder' ), [ 'status' => 404 ] );
         }
 
-        $columns = $wpdb->get_results(
+        $columns_raw = $wpdb->get_results(
             $wpdb->prepare(
-                "SELECT id, label, data_type, sort_order FROM {$wpdb->prefix}wtb_columns WHERE table_id = %d ORDER BY sort_order ASC",
+                "SELECT id, label, data_type, settings, sort_order FROM {$wpdb->prefix}wtb_columns WHERE table_id = %d ORDER BY sort_order ASC",
                 $table_id
             ),
             ARRAY_A
         );
+
+        $columns = array_map( function( $col ) {
+            $col['id']         = (int) $col['id'];
+            $col['sort_order'] = (int) $col['sort_order'];
+            $settings          = $col['settings'] ? (array) json_decode( $col['settings'], true ) : [];
+            $col['post_field']     = sanitize_text_field( $settings['post_field'] ?? '' );
+            $col['image_size']     = sanitize_text_field( $settings['image_size'] ?? 'thumbnail' );
+            $col['image_custom_w'] = absint( $settings['image_custom_w'] ?? 100 );
+            $col['image_custom_h'] = absint( $settings['image_custom_h'] ?? 100 );
+            unset($col['settings']);
+            return $col;
+        }, $columns_raw );
 
         $rows_raw = $wpdb->get_results(
             $wpdb->prepare(
@@ -160,21 +179,28 @@ class WTB_Rest_Controller {
             $temp_key  = sanitize_text_field( $col['temp_key'] ?? '' );
             $label     = WTB_Sanitizer::plain_text( $col['label']    ?? '' );
             $data_type = WTB_Sanitizer::data_type( $col['data_type'] ?? 'text' );
+            $col_settings = [
+                'post_field'     => sanitize_text_field( $col['post_field'] ?? '' ),
+                'image_size'     => sanitize_text_field( $col['image_size'] ?? 'thumbnail' ),
+                'image_custom_w' => absint( $col['image_custom_w'] ?? 100 ),
+                'image_custom_h' => absint( $col['image_custom_h'] ?? 100 ),
+            ];
+            $settings_json = wp_json_encode( $col_settings );
 
             if ( $col_id > 0 ) {
                 $wpdb->update(
                     $wpdb->prefix . 'wtb_columns',
-                    [ 'label' => $label, 'data_type' => $data_type, 'sort_order' => $index ],
+                    [ 'label' => $label, 'data_type' => $data_type, 'settings' => $settings_json, 'sort_order' => $index ],
                     [ 'id' => $col_id, 'table_id' => $table_id ],
-                    [ '%s', '%s', '%d' ],
+                    [ '%s', '%s', '%s', '%d' ],
                     [ '%d', '%d' ]
                 );
                 $keep_column_ids[] = $col_id;
             } else {
                 $wpdb->insert(
                     $wpdb->prefix . 'wtb_columns',
-                    [ 'table_id' => $table_id, 'label' => $label, 'data_type' => $data_type, 'sort_order' => $index ],
-                    [ '%d', '%s', '%s', '%d' ]
+                    [ 'table_id' => $table_id, 'label' => $label, 'data_type' => $data_type, 'settings' => $settings_json, 'sort_order' => $index ],
+                    [ '%d', '%s', '%s', '%s', '%d' ]
                 );
                 $new_id = (int) $wpdb->insert_id;
                 $keep_column_ids[] = $new_id;
@@ -366,10 +392,10 @@ class WTB_Rest_Controller {
         $search = sanitize_text_field( $request->get_param( 'search' ) ?? '' );
 
         $total = (int) $wpdb->get_var(
-            $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d", $table_id )
+            $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d AND (status = 'published' OR status IS NULL OR status = '')", $table_id )
         );
 
-        $where    = $wpdb->prepare( 'WHERE table_id = %d', $table_id );
+        $where    = $wpdb->prepare( "WHERE table_id = %d AND (status = 'published' OR status IS NULL OR status = '')", $table_id );
         $filtered = $total;
 
         if ( $search ) {
@@ -392,6 +418,121 @@ class WTB_Rest_Controller {
             'recordsTotal'    => $total,
             'recordsFiltered' => $filtered,
             'data'            => $data,
+        ] );
+    }
+
+    public static function submit_form_data( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+        global $wpdb;
+
+        $table_id = (int) $request->get_param( 'id' );
+        $post     = get_post( $table_id );
+
+        if ( ! $post || $post->post_type !== 'wtb_table' ) {
+            return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wp-table-builder' ), [ 'status' => 404 ] );
+        }
+
+        $settings_raw = get_post_meta( $table_id, '_wtb_settings', true );
+        $settings     = WTB_Sanitizer::table_settings(
+            $settings_raw ? (array) json_decode( $settings_raw, true ) : []
+        );
+
+        if ( empty( $settings['enable_form_submission'] ) ) {
+            return new WP_Error( 'form_disabled', __( 'Pengisian form untuk tabel ini tidak diaktifkan.', 'wp-table-builder' ), [ 'status' => 403 ] );
+        }
+
+        $columns = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT id, label, data_type FROM {$wpdb->prefix}wtb_columns WHERE table_id = %d ORDER BY sort_order ASC",
+                $table_id
+            ),
+            ARRAY_A
+        );
+
+        if ( empty( $columns ) ) {
+            return new WP_Error( 'invalid_table', __( 'Tabel belum memiliki kolom.', 'wp-table-builder' ), [ 'status' => 400 ] );
+        }
+
+        $params    = $request->get_params();
+        $submitted = [];
+
+        if ( isset( $params['cells_data'] ) && is_array( $params['cells_data'] ) ) {
+            $submitted = $params['cells_data'];
+        } elseif ( isset( $params['fields'] ) && is_array( $params['fields'] ) ) {
+            // Elementor Form Webhook JSON structure
+            foreach ( $params['fields'] as $field_key => $field_data ) {
+                $val   = is_array( $field_data ) ? ( $field_data['value'] ?? '' ) : $field_data;
+                $label = is_array( $field_data ) ? ( $field_data['title'] ?? $field_key ) : $field_key;
+
+                if ( is_array( $val ) ) {
+                    $val = implode( ', ', $val );
+                }
+
+                foreach ( $columns as $col ) {
+                    $col_id    = (string) $col['id'];
+                    $col_label = mb_strtolower( trim( $col['label'] ) );
+                    $field_lbl = mb_strtolower( trim( (string) $label ) );
+                    $field_id  = mb_strtolower( trim( (string) $field_key ) );
+
+                    if ( $col_id === (string) $field_key || $col_label === $field_lbl || $col_label === $field_id ) {
+                        $submitted[ $col_id ] = (string) $val;
+                    }
+                }
+            }
+        } else {
+            // Fallback for custom API / Webhook form parameter mapping
+            foreach ( $columns as $col ) {
+                $col_id    = (string) $col['id'];
+                $col_label = mb_strtolower( trim( $col['label'] ) );
+
+                if ( isset( $params[ $col_id ] ) ) {
+                    $submitted[ $col_id ] = is_array( $params[ $col_id ] ) ? implode( ', ', $params[ $col_id ] ) : (string) $params[ $col_id ];
+                } else {
+                    foreach ( $params as $pk => $pv ) {
+                        if ( mb_strtolower( trim( $pk ) ) === $col_label ) {
+                            $submitted[ $col_id ] = is_array( $pv ) ? implode( ', ', $pv ) : (string) $pv;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        $cells_clean = [];
+        foreach ( $columns as $col ) {
+            $key      = (string) $col['id'];
+            $raw_val  = isset( $submitted[ $key ] ) ? (string) $submitted[ $key ] : '';
+            $cells_clean[ $key ] = WTB_Sanitizer::cell_value( $raw_val, $col['data_type'] );
+        }
+
+        $max_order = (int) $wpdb->get_var(
+            $wpdb->prepare( "SELECT MAX(sort_order) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d", $table_id )
+        );
+
+        $status = ! empty( $settings['form_require_approval'] ) ? 'pending' : 'published';
+
+        $inserted = $wpdb->insert(
+            $wpdb->prefix . 'wtb_rows',
+            [
+                'table_id'   => $table_id,
+                'cells_data' => wp_json_encode( $cells_clean ),
+                'sort_order' => $max_order + 1,
+                'status'     => $status,
+            ],
+            [ '%d', '%s', '%d', '%s' ]
+        );
+
+        if ( false === $inserted ) {
+            return new WP_Error( 'db_error', __( 'Gagal menyimpan data ke database.', 'wp-table-builder' ), [ 'status' => 500 ] );
+        }
+
+        $message = $status === 'pending'
+            ? __( 'Terima kasih! Data Anda telah terkirim dan menunggu persetujuan admin.', 'wp-table-builder' )
+            : __( 'Berhasil! Data Anda telah ditambahkan ke tabel.', 'wp-table-builder' );
+
+        return rest_ensure_response( [
+            'success' => true,
+            'message' => $message,
+            'status'  => $status,
         ] );
     }
 }

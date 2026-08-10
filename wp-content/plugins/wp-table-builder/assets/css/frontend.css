@@ -277,3 +277,409 @@
     font-size: 1.1em;
     letter-spacing: 2px;
 }
+
+.wtb-cell-file-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    vertical-align: middle;
+}
+
+.wtb-cell-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: #f1f5f9;
+    color: #334155 !important;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.85em;
+    font-weight: 500;
+    text-decoration: none !important;
+    transition: all 0.2s ease;
+    max-width: 220px;
+}
+
+.wtb-cell-file:hover {
+    background: #e2e8f0;
+    color: #0f172a !important;
+    border-color: #94a3b8;
+    transform: translateY(-1px);
+}
+
+.wtb-cell-file span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.wtb-file-icon {
+    flex-shrink: 0;
+}
+
+.wtb-btn-file-preview {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    background: #eef2ff;
+    color: #4f46e5;
+    border: 1px solid #c7d2fe;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.wtb-btn-file-preview:hover {
+    background: #4f46e5;
+    color: #ffffff;
+    border-color: #4f46e5;
+    transform: scale(1.05);
+}
+
+/* File Modal Overlay & Dialog */
+.wtb-file-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(6px);
+    z-index: 999999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.wtb-file-modal-overlay.wtb-modal-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.wtb-file-modal-dialog {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 850px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.wtb-file-modal-overlay.wtb-modal-active .wtb-file-modal-dialog {
+    transform: scale(1) translateY(0);
+}
+
+.wtb-file-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.wtb-file-modal-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #1e293b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80%;
+}
+
+.wtb-file-modal-close {
+    background: transparent;
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0 4px;
+    border-radius: 4px;
+    transition: color 0.15s ease, background 0.15s ease;
+}
+
+.wtb-file-modal-close:hover {
+    color: #0f172a;
+    background: #e2e8f0;
+}
+
+.wtb-file-modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    min-height: 200px;
+}
+
+.wtb-preview-img-wrap, .wtb-preview-media-wrap, .wtb-preview-fallback-wrap {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.wtb-preview-img {
+    max-width: 100%;
+    max-height: 65vh;
+    object-fit: contain;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.wtb-file-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 14px 20px;
+    border-top: 1px solid #e2e8f0;
+    background: #f8fafc;
+}
+
+.wtb-modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none !important;
+}
+
+.wtb-modal-btn-download {
+    background: #4f46e5;
+    color: #ffffff !important;
+    border: 1px solid #4f46e5;
+}
+
+.wtb-modal-btn-download:hover {
+    background: #4338ca;
+    border-color: #4338ca;
+}
+
+.wtb-modal-btn-close {
+    background: #ffffff;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+.wtb-modal-btn-close:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+/* Header Cell Layout & Inline Taxonomy Dropdown */
+.wtb-table th .wtb-th-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+}
+
+.wtb-table th .wtb-th-label-text {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wtb-header-tax-wrap {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    position: relative;
+    cursor: pointer;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    transition: background 0.2s ease;
+}
+
+.wtb-header-tax-wrap:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.wtb-tax-icon {
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+    color: inherit;
+}
+
+.wtb-header-tax-wrap:hover .wtb-tax-icon {
+    opacity: 1;
+}
+
+.wtb-header-tax-select {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0; /* visually hidden but clickable */
+    cursor: pointer;
+    outline: none;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.wtb-header-tax-select option {
+    background: #ffffff;
+    color: #1e293b;
+}
+
+/* Fix overlap between DataTables sorting arrows and Taxonomy icon */
+.wtb-table th.sorting.wtb-th-has-filter,
+.wtb-table th.sorting_asc.wtb-th-has-filter,
+.wtb-table th.sorting_desc.wtb-th-has-filter {
+    padding-right: 48px !important;
+}
+
+.wtb-header-tax-select:hover,
+.wtb-header-tax-select:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+/* User Form Submission Container */
+.wtb-form-container {
+    margin-top: 24px;
+    padding: 20px 24px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.wtb-form-header {
+    margin-bottom: 18px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 12px;
+}
+
+.wtb-form-title {
+    margin: 0 0 4px 0;
+    font-size: 1.15em;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.wtb-form-subtitle {
+    margin: 0;
+    font-size: 0.88em;
+    color: #64748b;
+}
+
+.wtb-form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.wtb-form-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.wtb-form-label {
+    font-size: 0.88em;
+    font-weight: 600;
+    color: #334155;
+}
+
+.wtb-form-input,
+.wtb-form-textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 0.9em;
+    color: #1e293b;
+    background: #ffffff;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wtb-form-input:focus,
+.wtb-form-textarea:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    outline: none;
+}
+
+.wtb-form-submit-btn-wrap {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.wtb-form-btn-submit {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 20px;
+    background: #4f46e5;
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+}
+
+.wtb-form-btn-submit:hover {
+    background: #4338ca;
+}
+
+.wtb-form-btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.wtb-form-response-msg {
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    margin-bottom: 16px;
+}
+
+.wtb-msg-success {
+    background: #f0fdf4;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.wtb-msg-error {
+    background: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}

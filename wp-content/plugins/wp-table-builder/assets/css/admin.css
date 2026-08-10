@@ -1016,3 +1016,38 @@ input.wtb-cell-input[data-col-type="rating"] {
     font-size: 40px;
     color: var(--wtb-primary);
 }
+
+.wtb-file-cell-wrap {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+}
+
+.wtb-file-cell-wrap input {
+    flex: 1;
+    min-width: 0;
+}
+
+.wtb-btn-upload-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--wtb-radius-sm);
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: var(--wtb-transition);
+    flex-shrink: 0;
+}
+
+.wtb-btn-upload-file:hover {
+    background: #e2e8f0;
+    color: var(--wtb-primary);
+    border-color: var(--wtb-primary-border);
+}

@@ -14,7 +14,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'WTB_VERSION',    '1.0.7' );
+define( 'WTB_VERSION',    '1.0.8' );
 define( 'WTB_PLUGIN_FILE', __FILE__ );
 define( 'WTB_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'WTB_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
@@ -25,16 +25,23 @@ require_once WTB_PLUGIN_DIR . 'includes/class-post-type.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-rest-controller.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-admin-page.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-shortcode.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-form-shortcode.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-integration.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-render.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-block.php';
 
 register_activation_hook( __FILE__, [ 'WTB_Activator', 'activate' ] );
 
 add_action( 'plugins_loaded', function () {
+    if ( get_option( 'wtb_db_version' ) !== WTB_VERSION ) {
+        WTB_Activator::activate();
+    }
     WTB_Post_Type::init();
     WTB_Rest_Controller::init();
     WTB_Admin_Page::init();
     WTB_Shortcode::init();
+    WTB_Form_Shortcode::init();
+    WTB_Elementor_Form_Integration::init();
     WTB_Block::init();
 
     add_action( 'elementor/widgets/register', function( $widgets_manager ) {

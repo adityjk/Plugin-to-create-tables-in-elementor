@@ -184,6 +184,52 @@ class WTB_Elementor_Widget extends Widget_Base {
             'condition' => [ 'show_pagination' => 'yes' ],
         ] );
 
+        $this->add_control( 'show_file_preview', [
+            'label'        => __( 'Tampilkan Preview File (Modal)', 'wp-table-builder' ),
+            'type'         => Controls_Manager::SWITCHER,
+            'label_on'     => __( 'Ya', 'wp-table-builder' ),
+            'label_off'    => __( 'Tidak', 'wp-table-builder' ),
+            'return_value' => 'yes',
+            'default'      => 'yes',
+            'separator'    => 'before',
+        ] );
+
+        $this->end_controls_section();
+
+        // --- Section: Taxonomy & Form Submission ---
+        $this->start_controls_section( 'features_section', [
+            'label' => __( 'Taxonomy & Form Submission', 'wp-table-builder' ),
+            'tab'   => Controls_Manager::TAB_CONTENT,
+        ] );
+
+        $this->add_control( 'enable_taxonomy_filter', [
+            'label'        => __( 'Aktifkan Filter Taxonomy / Kategori', 'wp-table-builder' ),
+            'type'         => Controls_Manager::SWITCHER,
+            'label_on'     => __( 'Ya', 'wp-table-builder' ),
+            'label_off'    => __( 'Tidak', 'wp-table-builder' ),
+            'return_value' => 'yes',
+            'default'      => 'no',
+        ] );
+
+        $this->add_control( 'enable_form_submission', [
+            'label'        => __( 'Tampilkan Form Input Pengunjung', 'wp-table-builder' ),
+            'type'         => Controls_Manager::SWITCHER,
+            'label_on'     => __( 'Ya', 'wp-table-builder' ),
+            'label_off'    => __( 'Tidak', 'wp-table-builder' ),
+            'return_value' => 'yes',
+            'default'      => 'no',
+        ] );
+
+        $this->add_control( 'form_require_approval', [
+            'label'        => __( 'Moderasi Admin (Perlu Persetujuan)', 'wp-table-builder' ),
+            'type'         => Controls_Manager::SWITCHER,
+            'label_on'     => __( 'Ya', 'wp-table-builder' ),
+            'label_off'    => __( 'Tidak (Langsung Publish)', 'wp-table-builder' ),
+            'return_value' => 'yes',
+            'default'      => 'no',
+            'condition'    => [ 'enable_form_submission' => 'yes' ],
+        ] );
+
         $this->end_controls_section();
 
         // ==================================================================
@@ -725,6 +771,12 @@ class WTB_Elementor_Widget extends Widget_Base {
             'prev_icon_html' => $prev_icon_html,
             'next_icon_html' => $next_icon_html,
             'pagination_type' => $settings['pagination_type'] ?? 'numbers',
+            'show_file_preview' => ( ( $settings['show_file_preview'] ?? 'yes' ) === 'yes' ),
+
+            // Features
+            'enable_taxonomy_filter' => ( ( $settings['enable_taxonomy_filter'] ?? 'no' ) === 'yes' ),
+            'enable_form_submission' => ( ( $settings['enable_form_submission'] ?? 'no' ) === 'yes' ),
+            'form_require_approval'  => ( ( $settings['form_require_approval']  ?? 'no' ) === 'yes' ),
 
             // Colors — use Elementor values as the definitive source
             'header_bg'        => $settings['override_header_bg']    ?? '#2271b1',

@@ -50,6 +50,8 @@ class WTB_Admin_Page {
         $table_id = absint( $_GET['table_id'] ?? 0 );
 
         if ( $action === 'edit' && $table_id > 0 ) {
+            wp_enqueue_media();
+
             wp_enqueue_script(
                 'wtb-admin-builder',
                 WTB_PLUGIN_URL . 'assets/js/admin-builder.js',
@@ -383,7 +385,31 @@ class WTB_Admin_Page {
                         <?php esc_html_e( 'Pengaturan tampilan (warna, border, shadow, dll) tersedia di panel Elementor saat menambah widget ke halaman.', 'wp-table-builder' ); ?>
                     </p>
 
-                    <form id="wtb-settings-form" autocomplete="off">
+                        <div class="wtb-settings-group">
+                            <label for="wtb_data_source"><strong><?php esc_html_e( 'Sumber Data (Data Source)', 'wp-table-builder' ); ?></strong></label>
+                            <select id="wtb_data_source" data-setting-key="data_source" style="margin-top: 4px; width: 100%;">
+                                <option value="manual"><?php esc_html_e( 'Manual (Input Baris / Elementor Form)', 'wp-table-builder' ); ?></option>
+                                <option value="wp_posts"><?php esc_html_e( 'WordPress Posts (Dynamic)', 'wp-table-builder' ); ?></option>
+                            </select>
+                        </div>
+
+                        <div class="wtb-settings-group wtb-wp-posts-setting" style="display:none; padding-left:12px; border-left:3px solid #4f46e5;">
+                            <label for="wtb_post_type"><?php esc_html_e( 'Tipe Post', 'wp-table-builder' ); ?></label>
+                            <select id="wtb_post_type" data-setting-key="post_type" style="margin-top: 4px; margin-bottom: 12px; width: 100%;">
+                                <?php
+                                $post_types = get_post_types( [ 'public' => true ], 'objects' );
+                                foreach ( $post_types as $pt ) {
+                                    if ( $pt->name === 'wtb_table' || $pt->name === 'attachment' ) continue;
+                                    echo '<option value="' . esc_attr( $pt->name ) . '">' . esc_html( $pt->label ) . '</option>';
+                                }
+                                ?>
+                            </select>
+                            
+                            <label for="wtb_posts_limit"><?php esc_html_e( 'Batas Tampil (Limit)', 'wp-table-builder' ); ?></label>
+                            <input type="number" id="wtb_posts_limit" data-setting-key="posts_limit" value="10" min="-1" style="margin-top: 4px; width: 100%;">
+                            <span class="description" style="display:block; margin-top:4px;">Gunakan -1 untuk menampilkan semua.</span>
+                        </div>
+                        <hr style="border: 0; border-top: 1px solid #e2e8f0; margin: 16px 0;">
 
                         <div class="wtb-settings-group">
                             <label>
@@ -396,6 +422,13 @@ class WTB_Admin_Page {
                             <label>
                                 <input type="checkbox" id="wtb_enable_sort" data-setting-key="enable_sort" value="1" checked>
                                 <?php esc_html_e( 'Aktifkan sort kolom', 'wp-table-builder' ); ?>
+                            </label>
+                        </div>
+
+                        <div class="wtb-settings-group">
+                            <label>
+                                <input type="checkbox" id="wtb_show_file_preview" data-setting-key="show_file_preview" value="1" checked>
+                                <?php esc_html_e( 'Tampilkan preview file (modal popup)', 'wp-table-builder' ); ?>
                             </label>
                         </div>
 
