@@ -158,6 +158,10 @@ class WTB_Render {
         if ( isset( $settings['pagination_type'] ) ) echo ' data-pagination-type="' . esc_attr( $settings['pagination_type'] ) . '"';
         $show_file_preview = ! empty( $settings['show_file_preview'] );
         echo ' data-show-file-preview="' . ( $show_file_preview ? '1' : '0' ) . '"';
+        $auto_refresh = isset( $settings['auto_refresh'] ) ? (bool) $settings['auto_refresh'] : true;
+        $auto_refresh_interval = isset( $settings['auto_refresh_interval'] ) ? (int) $settings['auto_refresh_interval'] : 5;
+        echo ' data-auto-refresh="' . ( $auto_refresh ? '1' : '0' ) . '"';
+        echo ' data-auto-refresh-interval="' . esc_attr( $auto_refresh_interval ) . '"';
         echo '>';
 
         echo '<thead><tr>';
@@ -468,12 +472,14 @@ class WTB_Render {
         }
 
         wp_localize_script( 'wtb-frontend', 'WTB_Table_' . $table_id, [
-            'tableId'    => $table_id,
-            'serverSide' => $server_side,
-            'restUrl'    => esc_url_raw( rest_url( 'wtb/v1' ) ),
-            'nonce'      => wp_create_nonce( 'wp_rest' ),
-            'settings'   => $settings,
-            'columns'    => array_map( function( $col ) {
+            'tableId'             => $table_id,
+            'serverSide'          => $server_side,
+            'restUrl'             => esc_url_raw( rest_url( 'wtb/v1' ) ),
+            'nonce'               => wp_create_nonce( 'wp_rest' ),
+            'settings'            => $settings,
+            'autoRefresh'         => isset( $settings['auto_refresh'] ) ? (bool) $settings['auto_refresh'] : true,
+            'autoRefreshInterval' => isset( $settings['auto_refresh_interval'] ) ? (int) $settings['auto_refresh_interval'] : 5,
+            'columns'             => array_map( function( $col ) {
                 return [ 'id' => $col['id'], 'label' => $col['label'], 'data_type' => $col['data_type'] ];
             }, $columns ),
         ] );

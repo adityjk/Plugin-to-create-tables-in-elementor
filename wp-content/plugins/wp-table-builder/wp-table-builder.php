@@ -26,7 +26,10 @@ require_once WTB_PLUGIN_DIR . 'includes/class-rest-controller.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-admin-page.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-shortcode.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-form-shortcode.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-debug-logger.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-integration.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-action.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-elementor-dynamic-tag.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-render.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-block.php';
 
@@ -47,6 +50,10 @@ add_action( 'plugins_loaded', function () {
     add_action( 'elementor/widgets/register', function( $widgets_manager ) {
         require_once WTB_PLUGIN_DIR . 'includes/class-elementor-widget.php';
         $widgets_manager->register( new WTB_Elementor_Widget() );
+    } );
+
+    add_action( 'elementor/dynamic_tags/register', function( $dynamic_tags ) {
+        $dynamic_tags->register( new WTB_Elementor_Dynamic_Tag() );
     } );
 
     // Preconnect to Google Fonts CDN to speed up font dropdown loading in Elementor Editor

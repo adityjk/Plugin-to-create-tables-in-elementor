@@ -359,5 +359,125 @@
         });
     });
 
+
+    // ── Auto-Refresh Polling ─────────────────────────────────────────────────
+    // For every .wtb-table that has data-auto-refresh="1" (or the global config
+    // has autoRefresh: true), poll /row-count every N seconds and reload if new
+    // rows arrived.
+
+    var wtbPollers = {}; // keyed by tableId
+
+    function startPoller($table) {
+        var tableId = $table.data('table-id');
+        if ( ! tableId ) return;
+        if ( wtbPollers[tableId] ) return; // already running
+
+        var config   = window['WTB_Table_' + tableId] || {};
+        var restUrl  = config.restUrl || '';
+        if ( ! restUrl ) return;
+
+        var interval = parseInt( $table.data('auto-refresh-interval') || config.autoRefreshInterval || 5, 10 );
+        if ( isNaN(interval) || interval < 3 ) interval = 5;
+
+        var knownCount = parseInt( $table.data('row-count') || -1, 10 );
+        var serverSide = $table.data('server-side') === 1 || $table.data('server-side') === '1';
+        var countUrl   = restUrl + '/tables/' + tableId + '/row-count';
+
+        // Fetch initial count if not stamped in HTML
+        if ( knownCount < 0 ) {
+            $.getJSON( countUrl, function(res) {
+                if ( res && typeof res.count !== 'undefined' ) {
+                    knownCount = parseInt(res.count, 10);
+                }
+            });
+        }
+
+        wtbPollers[tableId] = setInterval(function() {
+            // Skip poll when tab is hidden — saves server requests
+            if ( document.hidden ) return;
+
+            $.getJSON( countUrl )
+                .done(function(res) {
+                    if ( ! res || typeof res.count === 'undefined' ) return;
+                    var fresh = parseInt(res.count, 10);
+                    if ( knownCount >= 0 && fresh > knownCount ) {
+                        knownCount = fresh;
+                        // Show a subtle flash on the table wrapper
+                        var $wrap = $table.closest('.wtb-table-wrap');
+                        $wrap.addClass('wtb-refreshing');
+                        setTimeout(function(){ $wrap.removeClass('wtb-refreshing'); }, 600);
+
+                        if ( serverSide && $.fn.DataTable && $.fn.DataTable.isDataTable($table) ) {
+                            $table.DataTable().ajax.reload(null, false);
+                        } else {
+                            // Soft reload: keep scroll position
+                            var scrollY = window.scrollY;
+                            window.location.reload();
+                            // Browser restores scroll; this is just a hint
+                            setTimeout(function(){ window.scrollTo(0, scrollY); }, 100);
+                        }
+                    } else if ( knownCount < 0 ) {
+                        knownCount = fresh;
+                    }
+                });
+        }, interval * 1000);
+
+        // Stop poller if the table is removed from DOM (e.g. Elementor edit)
+        if ( window.MutationObserver ) {
+            var obs = new MutationObserver(function() {
+                if ( ! document.body.contains( $table[0] ) ) {
+                    stopPoller(tableId);
+                    obs.disconnect();
+                }
+            });
+            obs.observe(document.body, { childList: true, subtree: true });
+        }
+    }
+
+    function stopPoller(tableId) {
+        if ( wtbPollers[tableId] ) {
+            clearInterval( wtbPollers[tableId] );
+            delete wtbPollers[tableId];
+        }
+    }
+
+    function maybeStartPollers($scope) {
+        $scope.find('.wtb-table').each(function() {
+            var $table  = $(this);
+            var tableId = $table.data('table-id');
+            var config  = window['WTB_Table_' + tableId] || {};
+
+            // Auto-refresh enabled if: data-auto-refresh="1" on the table element
+            // OR config.autoRefresh === true (set via wp_localize_script)
+            var enabled = $table.data('auto-refresh') === 1 ||
+                          $table.data('auto-refresh') === '1' ||
+                          config.autoRefresh === true;
+
+            if ( enabled ) {
+                startPoller($table);
+            }
+        });
+    }
+
+    // Hook into the same ready/Elementor init points
+    $(document).ready(function() {
+        maybeStartPollers( $(document) );
+    });
+
+    if ( window.elementorFrontend ) {
+        $(window).on('elementor/frontend/init', function() {
+            if ( window.elementorFrontend.hooks ) {
+                window.elementorFrontend.hooks.addAction(
+                    'frontend/element_ready/wtb_table.default',
+                    function($scope) {
+                        // Don't poll inside the editor
+                        if ( window.elementorFrontend.isEditMode && window.elementorFrontend.isEditMode() ) return;
+                        maybeStartPollers($scope);
+                    }
+                );
+            }
+        });
+    }
+
 }(jQuery));
 

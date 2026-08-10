@@ -147,6 +147,14 @@
                 '  <option value="text"' + (col.filter_type === 'text' ? ' selected' : '') + '>Text Input</option>' +
                 '</select></div>';
 
+        // Unique Field toggle
+        html += '<div style="margin-top:8px; border-top:1px solid #e2e8f0; padding-top:8px; display:flex; align-items:center; gap:6px;">' +
+                '<input type="checkbox" class="wtb-col-is-unique" data-col-id="' + col_key + '" id="wtb-unique-' + col_key + '"' +
+                (col.is_unique ? ' checked' : '') + ' style="width:14px;height:14px;margin:0;cursor:pointer;accent-color:#6366f1;">' +
+                '<label for="wtb-unique-' + col_key + '" style="font-size:0.8em; color:#475569; cursor:pointer; margin:0; user-select:none;">' +
+                '🔒 Nilai Unik <span style="color:#94a3b8;font-size:0.9em">(tolak duplikat)</span>' +
+                '</label></div>';
+
         html += '</div>';
         return html;
     }
@@ -443,6 +451,7 @@
                         if (e.target.classList.contains('wtb-col-filter-type')) col.filter_type = e.target.value;
                         if (e.target.classList.contains('wtb-col-img-w')) col.image_custom_w = parseInt(e.target.value, 10) || 100;
                         if (e.target.classList.contains('wtb-col-img-h')) col.image_custom_h = parseInt(e.target.value, 10) || 100;
+                        if (e.target.classList.contains('wtb-col-is-unique')) col.is_unique = e.target.checked;
                     }
 
                     renderColumnHeaders();
@@ -618,6 +627,7 @@
             label:      STRINGS.new_col_label || 'Kolom Baru',
             data_type:  'text',
             sort_order: state.columns.length,
+            is_unique:  false,
         };
 
         state.columns.push(newCol);
@@ -703,6 +713,9 @@
                     
                     var ch = wrap.querySelector('.wtb-col-img-h');
                     if (ch) col.image_custom_h = parseInt(ch.value, 10) || 100;
+
+                    var uniq = wrap.querySelector('.wtb-col-is-unique');
+                    if (uniq) col.is_unique = uniq.checked;
                 }
             }
         });
@@ -750,6 +763,7 @@
                     image_custom_w: col.image_custom_w || 100,
                     image_custom_h: col.image_custom_h || 100,
                     filter_type: col.filter_type || '',
+                    is_unique:  col.is_unique ? true : false,
                     sort_order: index,
                 };
             }),

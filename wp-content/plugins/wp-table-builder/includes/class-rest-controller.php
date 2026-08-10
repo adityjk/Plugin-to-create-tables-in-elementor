@@ -79,7 +79,31 @@ class WTB_Rest_Controller {
             'permission_callback' => [ __CLASS__, 'admin_permission' ],
             'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
         ] );
+
+        register_rest_route( self::NAMESPACE, '/tables/(?P<id>\d+)/row-count', [
+            'methods'             => WP_REST_Server::READABLE,
+            'callback'            => [ __CLASS__, 'get_row_count' ],
+            'permission_callback' => '__return_true',
+            'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
+        ] );
     }
+
+    /**
+     * Lightweight endpoint: returns only the published row count for a table.
+     * Used by frontend auto-refresh polling.
+     */
+    public static function get_row_count( WP_REST_Request $request ): WP_REST_Response {
+        global $wpdb;
+        $table_id = absint( $request['id'] );
+        $count = (int) $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT COUNT(*) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d AND status = 'published'",
+                $table_id
+            )
+        );
+        return new WP_REST_Response( [ 'count' => $count ], 200 );
+    }
+
 
     public static function admin_permission(): bool {
         return current_user_can( 'manage_options' );
@@ -127,6 +151,8 @@ class WTB_Rest_Controller {
             $col['image_size']     = sanitize_text_field( $settings['image_size'] ?? 'thumbnail' );
             $col['image_custom_w'] = absint( $settings['image_custom_w'] ?? 100 );
             $col['image_custom_h'] = absint( $settings['image_custom_h'] ?? 100 );
+            $col['filter_type']    = sanitize_text_field( $settings['filter_type'] ?? '' );
+            $col['is_unique']      = ! empty( $settings['is_unique'] );
             unset($col['settings']);
             return $col;
         }, $columns_raw );
@@ -198,6 +224,8 @@ class WTB_Rest_Controller {
                 'image_size'     => sanitize_text_field( $col['image_size'] ?? 'thumbnail' ),
                 'image_custom_w' => absint( $col['image_custom_w'] ?? 100 ),
                 'image_custom_h' => absint( $col['image_custom_h'] ?? 100 ),
+                'filter_type'    => sanitize_text_field( $col['filter_type'] ?? '' ),
+                'is_unique'      => ! empty( $col['is_unique'] ),
             ];
             $settings_json = wp_json_encode( $col_settings );
 

@@ -4,11 +4,13 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class WTB_Admin_Page {
 
     public static function init() {
-        add_action( 'admin_menu',                      [ __CLASS__, 'register_menu' ] );
-        add_action( 'admin_enqueue_scripts',           [ __CLASS__, 'enqueue_assets' ] );
-        add_action( 'admin_post_wtb_create_table',     [ __CLASS__, 'handle_create_table' ] );
-        add_action( 'admin_post_wtb_delete_table',     [ __CLASS__, 'handle_delete_table' ] );
-        add_action( 'admin_post_wtb_duplicate_table',  [ __CLASS__, 'handle_duplicate_table' ] );
+        add_action( 'admin_menu',                        [ __CLASS__, 'register_menu' ] );
+        add_action( 'admin_enqueue_scripts',             [ __CLASS__, 'enqueue_assets' ] );
+        add_action( 'admin_post_wtb_create_table',       [ __CLASS__, 'handle_create_table' ] );
+        add_action( 'admin_post_wtb_delete_table',       [ __CLASS__, 'handle_delete_table' ] );
+        add_action( 'admin_post_wtb_duplicate_table',    [ __CLASS__, 'handle_duplicate_table' ] );
+        add_action( 'admin_post_wtb_clear_log',          [ __CLASS__, 'handle_clear_log' ] );
+        add_action( 'admin_post_wtb_toggle_debug',       [ __CLASS__, 'handle_toggle_debug' ] );
     }
 
     public static function register_menu() {
@@ -38,6 +40,15 @@ class WTB_Admin_Page {
             'manage_options',
             'wtb-new-table',
             [ __CLASS__, 'render_new_table_page' ]
+        );
+
+        add_submenu_page(
+            'wtb-tables',
+            __( 'Form Submission Log', 'wp-table-builder' ),
+            __( '🪵 Form Log', 'wp-table-builder' ),
+            'manage_options',
+            'wtb-form-log',
+            [ __CLASS__, 'render_form_log_page' ]
         );
     }
 
@@ -81,8 +92,132 @@ class WTB_Admin_Page {
         $wtb_hooks = [
             'toplevel_page_wtb-tables',
             'table-builder_page_wtb-new-table',
+            'table-builder_page_wtb-form-log',
         ];
         return in_array( $hook, $wtb_hooks, true );
+    }
+
+    /* ---------------------------------------------------------------
+     * Form Submission Log Page
+     * ------------------------------------------------------------- */
+
+    public static function handle_clear_log() {
+        check_admin_referer( 'wtb_clear_log' );
+        if ( current_user_can( 'manage_options' ) ) {
+            WTB_Debug_Logger::clear();
+        }
+        wp_safe_redirect( admin_url( 'admin.php?page=wtb-form-log&cleared=1' ) );
+        exit;
+    }
+
+    public static function handle_toggle_debug() {
+        check_admin_referer( 'wtb_toggle_debug' );
+        if ( current_user_can( 'manage_options' ) ) {
+            $current = WTB_Debug_Logger::is_enabled();
+            WTB_Debug_Logger::set_mode( ! $current );
+        }
+        wp_safe_redirect( admin_url( 'admin.php?page=wtb-form-log' ) );
+        exit;
+    }
+
+    public static function render_form_log_page() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+        }
+
+        $debug_on = WTB_Debug_Logger::is_enabled();
+        $logs     = WTB_Debug_Logger::get_all();
+        $cleared  = isset( $_GET['cleared'] );
+        ?>
+        <div class="wrap" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+            <h1 style="display:flex;align-items:center;gap:10px">
+                🪵 Form Submission Log
+                <span style="font-size:13px;font-weight:400;color:#666;margin-left:4px">
+                    (<?php echo count( $logs ); ?> entri)
+                </span>
+            </h1>
+
+            <?php if ( $cleared ): ?>
+            <div class="notice notice-success is-dismissible"><p>Log berhasil dihapus.</p></div>
+            <?php endif; ?>
+
+            <!-- Controls -->
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+
+                <!-- Toggle Debug Mode -->
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
+                    <?php wp_nonce_field( 'wtb_toggle_debug' ); ?>
+                    <input type="hidden" name="action" value="wtb_toggle_debug">
+                    <button type="submit" class="button <?php echo $debug_on ? 'button-primary' : 'button-secondary'; ?>">
+                        <?php echo $debug_on ? '🟢 Debug ON — Klik untuk Matikan' : '⚫ Debug OFF — Klik untuk Aktifkan'; ?>
+                    </button>
+                </form>
+
+                <!-- Clear Log -->
+                <?php if ( ! empty( $logs ) ): ?>
+                <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" onsubmit="return confirm('Hapus semua log?')">
+                    <?php wp_nonce_field( 'wtb_clear_log' ); ?>
+                    <input type="hidden" name="action" value="wtb_clear_log">
+                    <button type="submit" class="button button-secondary" style="color:#c0392b">🗑 Hapus Semua Log</button>
+                </form>
+                <?php endif; ?>
+
+                <button onclick="location.reload()" class="button button-secondary">🔄 Refresh</button>
+            </div>
+
+            <?php if ( ! $debug_on ): ?>
+            <div style="background:#fff3cd;border:1px solid #ffc107;border-radius:6px;padding:14px 18px;margin-bottom:16px">
+                <strong>⚠️ Debug mode sedang OFF.</strong> Aktifkan terlebih dahulu, lalu coba submit form Elementor.
+                Log akan muncul di sini secara otomatis.
+            </div>
+            <?php endif; ?>
+
+            <?php if ( empty( $logs ) ): ?>
+            <div style="background:#f0f0f1;border-radius:6px;padding:30px;text-align:center;color:#666">
+                Belum ada log. Aktifkan debug mode lalu submit form.
+            </div>
+            <?php else: ?>
+
+            <!-- Log Table -->
+            <div style="overflow-x:auto">
+            <table class="wp-list-table widefat fixed striped" style="border-radius:8px;overflow:hidden">
+                <thead style="background:#1d2327">
+                    <tr>
+                        <th style="color:#fff;width:160px">Waktu</th>
+                        <th style="color:#fff;width:80px">Level</th>
+                        <th style="color:#fff">Pesan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php foreach ( $logs as $entry ):
+                    $level = $entry['level'] ?? 'INFO';
+                    $badge_style = match ( $level ) {
+                        'ERROR' => 'background:#e74c3c;color:#fff',
+                        'WARN'  => 'background:#f39c12;color:#fff',
+                        default => 'background:#27ae60;color:#fff',
+                    };
+                    $row_bg = $level === 'ERROR' ? 'background:#fff5f5' : ( $level === 'WARN' ? 'background:#fffdf0' : '' );
+                ?>
+                <tr style="<?php echo esc_attr( $row_bg ); ?>">
+                    <td style="font-size:12px;color:#555;white-space:nowrap"><?php echo esc_html( $entry['ts'] ?? '' ); ?></td>
+                    <td>
+                        <span style="<?php echo esc_attr( $badge_style ); ?>;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:700">
+                            <?php echo esc_html( $level ); ?>
+                        </span>
+                    </td>
+                    <td style="font-family:monospace;font-size:12px;word-break:break-all">
+                        <?php echo esc_html( $entry['message'] ?? '' ); ?>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+                </tbody>
+            </table>
+            </div>
+
+            <p style="color:#999;font-size:12px;margin-top:8px">Menampilkan <?php echo count( $logs ); ?> entri terbaru (maks 150). Terbaru di atas.</p>
+            <?php endif; ?>
+        </div>
+        <?php
     }
 
     public static function render_tables_page() {
