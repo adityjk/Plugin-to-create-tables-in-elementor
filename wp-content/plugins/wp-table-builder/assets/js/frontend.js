@@ -97,7 +97,40 @@
             }
         }
 
-        $table.DataTable(dtOptions);
+        var dt = $table.DataTable(dtOptions);
+
+        // Bind Header Taxonomy / Category filter dropdowns inside <th>
+        $table.find('thead .wtb-header-tax-select').each(function () {
+            var $select     = $(this);
+            var $th         = $select.closest('th');
+            var filterColId = String( $select.data('filter-col-id') || $th.data('col-id') || '' );
+            var colIndex    = $th.index();
+
+            if ( filterColId && config.columns ) {
+                for ( var i = 0; i < config.columns.length; i++ ) {
+                    if ( String(config.columns[i].id) === filterColId ) {
+                        colIndex = i;
+                        break;
+                    }
+                }
+            }
+
+            $select.off('click mousedown').on('click mousedown', function (e) {
+                e.stopPropagation();
+            });
+
+            $select.off('change').on('change', function (e) {
+                e.stopPropagation();
+                var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                if ( colIndex !== -1 ) {
+                    // Match exact term, allowing for comma separated lists
+                    var regex = val ? '(^|,\\s*)' + val + '(\\s*,|$)' : '';
+                    dt.column(colIndex).search(regex, true, false).draw();
+                } else {
+                    dt.search(val).draw();
+                }
+            });
+        });
     }
 
     /**
@@ -108,49 +141,6 @@
             initTable( $(this) );
         });
     }
-
-    // ── Taxonomy Filter Bar Click Handler ──────────────────────────────────
-    $(document).on('click', '.wtb-tax-btn', function (e) {
-        e.preventDefault();
-        var $btn     = $(this);
-        var $bar     = $btn.closest('.wtb-tax-filter-bar');
-        var targetId = $bar.data('table-id');
-        var term     = String($btn.data('term') || 'all');
-
-        $bar.find('.wtb-tax-btn').removeClass('active');
-        $btn.addClass('active');
-
-        var $table = targetId ? $('#' + targetId) : $bar.parent().find('.wtb-table');
-        if ( ! $table.length ) return;
-
-        if ( $.fn.DataTable && $.fn.DataTable.isDataTable($table) ) {
-            var dt = $table.DataTable();
-            if ( term === 'all' ) {
-                dt.draw();
-            } else {
-                $.fn.dataTable.ext.search.push(function (settings, data, dataIndex) {
-                    if ( settings.nTable.id !== $table.attr('id') ) {
-                        return true;
-                    }
-                    var $row = $(dt.row(dataIndex).node());
-                    var terms = ($row.attr('data-tax-terms') || '').split(' ');
-                    return terms.indexOf(term) !== -1;
-                });
-                dt.draw();
-                $.fn.dataTable.ext.search.pop();
-            }
-        } else {
-            $table.find('tbody tr').each(function () {
-                var $tr = $(this);
-                var terms = ($tr.attr('data-tax-terms') || '').split(' ');
-                if ( term === 'all' || terms.indexOf(term) !== -1 ) {
-                    $tr.show();
-                } else {
-                    $tr.hide();
-                }
-            });
-        }
-    });
 
     // ── Standard page load ──────────────────────────────────────────────────
     $(document).ready(function () {
@@ -189,12 +179,166 @@
     }
 
     if ( window.elementorFrontend && window.elementorFrontend.isInit ) {
-        // elementorFrontend already bootstrapped — register immediately
         registerElementorHook();
     } else {
-        // Wait for elementorFrontend to bootstrap
         $(window).on('elementor/frontend/init', registerElementorHook);
     }
+
+    // ── File Preview Modal ───────────────────────────────────────────────────
+    function openFilePreviewModal(fileUrl, fileName) {
+        if ( ! fileUrl ) return;
+
+        var urlClean  = String(fileUrl).trim();
+        var nameClean = fileName ? String(fileName) : (urlClean.split('/').pop() || 'File Preview');
+        var ext       = urlClean.split('.').pop().split(/\#|\?/)[0].toLowerCase();
+
+        var $overlay = $('<div class="wtb-file-modal-overlay"></div>');
+        var $dialog  = $('<div class="wtb-file-modal-dialog" role="dialog" aria-modal="true"></div>');
+
+        var $header = $(
+            '<div class="wtb-file-modal-header">' +
+            '  <h3 class="wtb-file-modal-title" title="' + escapeHtml(nameClean) + '">' + escapeHtml(nameClean) + '</h3>' +
+            '  <button type="button" class="wtb-file-modal-close" aria-label="Tutup modal">\u00d7</button>' +
+            '</div>'
+        );
+
+        var $body = $('<div class="wtb-file-modal-body"></div>');
+        var $footer = $(
+            '<div class="wtb-file-modal-footer">' +
+            '  <a href="' + urlClean + '" target="_blank" download class="wtb-modal-btn wtb-modal-btn-download">' +
+            '    <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>' +
+            '    <span>Download File</span>' +
+            '  </a>' +
+            '  <button type="button" class="wtb-modal-btn wtb-modal-btn-close">Tutup</button>' +
+            '</div>'
+        );
+
+        if ( ext === 'pdf' ) {
+            $body.html('<iframe src="' + urlClean + '#toolbar=1" width="100%" height="500px" style="border:none;display:block;" title="' + escapeHtml(nameClean) + '"></iframe>');
+        } else if ( ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].indexOf(ext) !== -1 ) {
+            $body.html('<div class="wtb-preview-img-wrap"><img src="' + urlClean + '" alt="' + escapeHtml(nameClean) + '" class="wtb-preview-img"></div>');
+        } else if ( ['mp3', 'wav', 'ogg', 'm4a'].indexOf(ext) !== -1 ) {
+            $body.html('<div class="wtb-preview-media-wrap"><audio controls autoplay style="width:100%;max-width:500px;"><source src="' + urlClean + '"></audio></div>');
+        } else if ( ['mp4', 'webm', 'ogv', 'mov'].indexOf(ext) !== -1 ) {
+            $body.html('<div class="wtb-preview-media-wrap"><video controls autoplay style="max-width:100%;max-height:65vh;display:block;margin:0 auto;border-radius:8px;"><source src="' + urlClean + '"></video></div>');
+        } else {
+            $body.html(
+                '<div class="wtb-preview-fallback-wrap">' +
+                '  <svg viewBox="0 0 24 24" width="48" height="48" stroke="#4f46e5" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:12px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>' +
+                '  <h4 style="margin:0 0 8px;font-size:1.1em;color:#1e293b;">' + escapeHtml(nameClean) + '</h4>' +
+                '  <p style="color:#64748b;font-size:0.9em;margin:0;">Pratinjau langsung tidak tersedia untuk format file ini (.' + escapeHtml(ext) + '). Silakan unduh file untuk melihat isinya.</p>' +
+                '</div>'
+            );
+        }
+
+        $dialog.append($header).append($body).append($footer);
+        $overlay.append($dialog);
+        $('body').append($overlay);
+
+        setTimeout(function() {
+            $overlay.addClass('wtb-modal-active');
+        }, 10);
+
+        function closeModal() {
+            $overlay.removeClass('wtb-modal-active');
+            setTimeout(function() {
+                $overlay.remove();
+            }, 250);
+            $(document).off('keydown.wtbmodal');
+        }
+
+        $overlay.on('click', function (e) {
+            if ( $(e.target).hasClass('wtb-file-modal-overlay') || $(e.target).hasClass('wtb-file-modal-close') || $(e.target).hasClass('wtb-modal-btn-close') ) {
+                closeModal();
+            }
+        });
+
+        $(document).on('keydown.wtbmodal', function (e) {
+            if ( e.key === 'Escape' || e.keyCode === 27 ) {
+                closeModal();
+            }
+        });
+    }
+
+    function escapeHtml(text) {
+        return String(text)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    $(document).on('click', '.wtb-cell-file[data-preview="1"], .wtb-btn-file-preview', function (e) {
+        e.preventDefault();
+        var $el      = $(this);
+        var fileUrl  = $el.data('file-url')  || $el.attr('href');
+        var fileName = $el.data('file-name') || $el.find('span').text() || $el.attr('title');
+        openFilePreviewModal(fileUrl, fileName);
+    });
+
+    // ── Form Submission Handler ──────────────────────────────────────────────
+    $(document).on('submit', '.wtb-user-submit-form', function (e) {
+        e.preventDefault();
+
+        var $form   = $(this);
+        var $btn    = $form.find('.wtb-form-btn-submit');
+        var $msgBox = $form.find('.wtb-form-response-msg');
+        var tableId = $form.data('table-id');
+        var restUrl = $form.data('rest-url');
+        var config  = window['WTB_Table_' + tableId] || {};
+
+        $btn.prop('disabled', true).addClass('wtb-btn-loading');
+        $msgBox.hide().removeClass('wtb-msg-success wtb-msg-error');
+
+        var formData = {};
+        $form.find('[name^="cells_data["]').each(function () {
+            var name  = $(this).attr('name');
+            var match = name.match(/cells_data\[(\d+)\]/);
+            if ( match && match[1] ) {
+                formData[match[1]] = $(this).val();
+            }
+        });
+
+        $.ajax({
+            url:         restUrl,
+            type:        'POST',
+            contentType: 'application/json',
+            headers:     { 'X-WP-Nonce': config.nonce || '' },
+            data:        JSON.stringify({ cells_data: formData }),
+            success: function (res) {
+                $btn.prop('disabled', false).removeClass('wtb-btn-loading');
+                if ( res && res.success ) {
+                    $msgBox.addClass('wtb-msg-success')
+                        .html('<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><polyline points="20 6 9 17 4 12"></polyline></svg>' + escapeHtml(res.message))
+                        .fadeIn();
+                    $form[0].reset();
+
+                    var $table = $('#wtb-table-' + tableId);
+                    if ( $table.length && $.fn.DataTable && $.fn.DataTable.isDataTable($table) ) {
+                        var dt = $table.DataTable();
+                        if ( $table.data('server-side') === 1 || $table.data('server-side') === '1' ) {
+                            dt.ajax.reload(null, false);
+                        } else if ( res.status === 'published' ) {
+                            setTimeout(function () { window.location.reload(); }, 1200);
+                        }
+                    }
+                } else {
+                    $msgBox.addClass('wtb-msg-error')
+                        .text((res && res.message) ? res.message : 'Gagal mengirim data.')
+                        .fadeIn();
+                }
+            },
+            error: function (xhr) {
+                $btn.prop('disabled', false).removeClass('wtb-btn-loading');
+                var errText = 'Terjadi kesalahan saat mengirim data.';
+                if ( xhr.responseJSON && xhr.responseJSON.message ) {
+                    errText = xhr.responseJSON.message;
+                }
+                $msgBox.addClass('wtb-msg-error').text(errText).fadeIn();
+            }
+        });
+    });
 
 }(jQuery));
 

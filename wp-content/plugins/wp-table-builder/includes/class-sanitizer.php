@@ -8,7 +8,7 @@ class WTB_Sanitizer {
     }
 
     public static function data_type( string $value ): string {
-        $allowed = [ 'text', 'number', 'date', 'richtext', 'link', 'button', 'image', 'badge', 'rating' ];
+        $allowed = [ 'text', 'number', 'date', 'richtext', 'link', 'button', 'image', 'badge', 'rating', 'file' ];
         return in_array( $value, $allowed, true ) ? $value : 'text';
     }
 
@@ -18,6 +18,7 @@ class WTB_Sanitizer {
                 return wp_kses_post( wp_unslash( $value ) );
             case 'link':
             case 'image':
+            case 'file':
                 return esc_url_raw( wp_unslash( $value ) );
             case 'number':
             case 'rating':
@@ -50,6 +51,14 @@ class WTB_Sanitizer {
             'responsive_mode'        => in_array( $raw['responsive_mode'] ?? 'scroll', [ 'scroll', 'collapse' ], true )
                                         ? $raw['responsive_mode'] : 'scroll',
             'server_side_threshold'  => absint( $raw['server_side_threshold']  ?? 200 ),
+            'show_file_preview'      => (bool) ( $raw['show_file_preview']      ?? true ),
+            'enable_taxonomy_filter' => (bool) ( $raw['enable_taxonomy_filter'] ?? false ),
+            'taxonomy_filter_column' => sanitize_text_field( $raw['taxonomy_filter_column'] ?? '' ),
+            'enable_form_submission' => (bool) ( $raw['enable_form_submission'] ?? false ),
+            'form_require_approval'  => (bool) ( $raw['form_require_approval']  ?? false ),
+            'data_source'            => in_array( $raw['data_source'] ?? 'manual', [ 'manual', 'wp_posts' ], true ) ? $raw['data_source'] : 'manual',
+            'post_type'              => sanitize_text_field( $raw['post_type'] ?? 'post' ),
+            'posts_limit'            => absint( $raw['posts_limit'] ?? 10 ),
         ];
     }
 }
