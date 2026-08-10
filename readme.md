@@ -142,4 +142,3 @@ Repositori ini sudah dilengkapi dengan konfigurasi **Docker Compose** untuk kemu
 ## 📄 Lisensi
 
 Plugin ini dirilis di bawah lisensi **[GPL-2.0-or-later](https://www.gnu.org/licenses/gpl-2.0.html)**.
-
