@@ -22,6 +22,21 @@
 
 ---
 
+## 🛠️ Cara Instalasi (Dari GitHub)
+
+Karena plugin ini bersifat Open Source dan berada di GitHub, Anda bisa menginstalnya dengan cara berikut:
+
+1. Kunjungi halaman repositori GitHub plugin ini.
+2. Di sebelah kanan, cari bagian **Releases** dan klik versi rilis terbaru.
+3. Unduh file `wp-table-builder-X.X.X.zip` yang ada di bagian *Assets*.
+4. Masuk ke Dashboard WordPress Anda, lalu navigasi ke **Plugins > Add New Plugin** (Tambah Baru).
+5. Klik tombol **Upload Plugin** (Unggah Plugin) di bagian atas halaman.
+6. Pilih file `.zip` yang baru saja Anda unduh, lalu klik **Install Now** (Instal Sekarang).
+7. Setelah instalasi selesai, klik **Activate Plugin** (Aktifkan Plugin).
+8. Selesai! Menu **Table Builder** sekarang akan muncul di sidebar kiri admin WordPress Anda.
+
+---
+
 ## 📖 Panduan Cara Penggunaan
 
 ### 1. Membuat & Mengisi Data Tabel (Admin Dashboard)

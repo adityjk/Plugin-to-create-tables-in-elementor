@@ -3,8 +3,8 @@
  * Plugin Name: WP Table Builder
  * Plugin URI:  https://example.com/wp-table-builder
  * Description: Plugin WordPress untuk membuat dan mengelola tabel kustom secara visual. Mendukung Gutenberg Block, Elementor Widget, dan Shortcode. Frontend tabel dilengkapi search, sort, filter, dan pagination via DataTables.js.
- * Version:     1.0.2
- * Author:      Your Name
+ * Version:     1.1.0
+ * Author:      AdityJK
  * Author URI:  https://example.com
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -14,7 +14,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'WTB_VERSION',    '1.0.8' );
+define( 'WTB_VERSION',    '1.1.0' );
 define( 'WTB_PLUGIN_FILE', __FILE__ );
 define( 'WTB_PLUGIN_DIR',  plugin_dir_path( __FILE__ ) );
 define( 'WTB_PLUGIN_URL',  plugin_dir_url( __FILE__ ) );
