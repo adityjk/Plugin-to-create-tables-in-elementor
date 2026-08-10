@@ -82,12 +82,18 @@
                 type: 'GET',
                 headers: { 'X-WP-Nonce': config.nonce || '' },
                 data: function (d) {
-                    return {
+                    var req = {
                         draw:   d.draw,
                         start:  d.start,
                         length: d.length,
-                        search: d.search.value,
+                        search: d.search,
                     };
+                    if (d.columns) {
+                        req.columns = d.columns.map(function(col) {
+                            return { search: col.search };
+                        });
+                    }
+                    return req;
                 },
             };
             if ( config.columns ) {
@@ -99,11 +105,11 @@
 
         var dt = $table.DataTable(dtOptions);
 
-        // Bind Header Taxonomy / Category filter dropdowns inside <th>
-        $table.find('thead .wtb-header-tax-select').each(function () {
-            var $select     = $(this);
-            var $th         = $select.closest('th');
-            var filterColId = String( $select.data('filter-col-id') || $th.data('col-id') || '' );
+        // Bind Advanced Column Filters inside <th>
+        $table.find('thead .wtb-header-filter').each(function () {
+            var $input      = $(this);
+            var $th         = $input.closest('th');
+            var filterColId = String( $input.data('filter-col-id') || $th.data('col-id') || '' );
             var colIndex    = $th.index();
 
             if ( filterColId && config.columns ) {
@@ -115,21 +121,34 @@
                 }
             }
 
-            $select.off('click mousedown').on('click mousedown', function (e) {
+            $input.off('click mousedown').on('click mousedown', function (e) {
                 e.stopPropagation();
             });
 
-            $select.off('change').on('change', function (e) {
-                e.stopPropagation();
-                var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                if ( colIndex !== -1 ) {
-                    // Match exact term, allowing for comma separated lists
-                    var regex = val ? '(^|,\\s*)' + val + '(\\s*,|$)' : '';
-                    dt.column(colIndex).search(regex, true, false).draw();
-                } else {
-                    dt.search(val).draw();
-                }
-            });
+            if ( $input.is('select') ) {
+                $input.off('change').on('change', function (e) {
+                    e.stopPropagation();
+                    var val = $.fn.dataTable.util.escapeRegex($(this).val());
+                    if ( colIndex !== -1 ) {
+                        var regex = val ? '(^|,\\s*)' + val + '(\\s*,|$)' : '';
+                        dt.column(colIndex).search(regex, true, false).draw();
+                    } else {
+                        dt.search(val).draw();
+                    }
+                });
+            } else {
+                var searchTimeout;
+                $input.off('input').on('input', function(e) {
+                    e.stopPropagation();
+                    var val = $(this).val();
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(function() {
+                        if ( colIndex !== -1 ) {
+                            dt.column(colIndex).search(val).draw();
+                        }
+                    }, 400); // 400ms debounce
+                });
+            }
         });
     }
 

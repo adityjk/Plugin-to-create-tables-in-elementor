@@ -139,6 +139,14 @@
             }
         }
 
+        html += '<div style="margin-top:8px; border-top:1px solid #e2e8f0; padding-top:8px;">' +
+                '<label style="display:block; font-size:0.8em; margin-bottom:4px; color:#475569;">Filter Tipe:</label>' +
+                '<select class="wtb-col-filter-type" data-col-id="' + col_key + '" style="width:100%; font-size:0.9em; padding:2px;">' +
+                '  <option value=""' + (col.filter_type === '' || !col.filter_type ? ' selected' : '') + '>Tidak Ada</option>' +
+                '  <option value="select"' + (col.filter_type === 'select' ? ' selected' : '') + '>Select Dropdown</option>' +
+                '  <option value="text"' + (col.filter_type === 'text' ? ' selected' : '') + '>Text Input</option>' +
+                '</select></div>';
+
         html += '</div>';
         return html;
     }
@@ -417,6 +425,7 @@
                 if (e.target.classList.contains('wtb-col-type') || 
                     e.target.classList.contains('wtb-col-post-field') || 
                     e.target.classList.contains('wtb-col-image-size') || 
+                    e.target.classList.contains('wtb-col-filter-type') || 
                     e.target.classList.contains('wtb-col-img-w') || 
                     e.target.classList.contains('wtb-col-img-h')) {
                     
@@ -431,6 +440,7 @@
                         if (e.target.classList.contains('wtb-col-type')) col.data_type = e.target.value;
                         if (e.target.classList.contains('wtb-col-post-field')) col.post_field = e.target.value;
                         if (e.target.classList.contains('wtb-col-image-size')) col.image_size = e.target.value;
+                        if (e.target.classList.contains('wtb-col-filter-type')) col.filter_type = e.target.value;
                         if (e.target.classList.contains('wtb-col-img-w')) col.image_custom_w = parseInt(e.target.value, 10) || 100;
                         if (e.target.classList.contains('wtb-col-img-h')) col.image_custom_h = parseInt(e.target.value, 10) || 100;
                     }
@@ -449,6 +459,62 @@
         var saveBtn = document.getElementById('wtb-btn-save');
         if (saveBtn) {
             saveBtn.addEventListener('click', saveTable);
+        }
+
+        var exportBtn = document.getElementById('wtb-btn-export-csv');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', function() {
+                var url = REST_URL + '/tables/' + TABLE_ID + '/export_csv?_wpnonce=' + NONCE;
+                window.location.href = url;
+            });
+        }
+
+        var importBtn = document.getElementById('wtb-btn-import-csv');
+        var csvUpload = document.getElementById('wtb-csv-upload');
+        if (importBtn && csvUpload) {
+            importBtn.addEventListener('click', function() {
+                csvUpload.click();
+            });
+
+            csvUpload.addEventListener('change', function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+
+                if (!window.confirm(STRINGS.confirm_import || 'Mengimpor CSV akan menambah data ke tabel ini. Lanjutkan?')) {
+                    csvUpload.value = '';
+                    return;
+                }
+
+                var formData = new FormData();
+                formData.append('csv_file', file);
+                
+                showLoader();
+                
+                fetch(REST_URL + '/tables/' + TABLE_ID + '/import_csv', {
+                    method: 'POST',
+                    headers: { 'X-WP-Nonce': NONCE },
+                    body: formData
+                })
+                .then(function(res) {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(function(data) {
+                    if (data.success) {
+                        showNotice('success', STRINGS.import_success || 'Berhasil mengimpor data!');
+                        setTimeout(function() { window.location.reload(); }, 1500);
+                    } else {
+                        throw new Error(data.message || 'Gagal impor.');
+                    }
+                })
+                .catch(function(err) {
+                    showNotice('error', (STRINGS.import_error || 'Gagal impor:') + ' ' + err.message);
+                })
+                .finally(function() {
+                    hideLoader();
+                    csvUpload.value = '';
+                });
+            });
         }
 
         document.addEventListener('click', function (e) {
@@ -683,6 +749,7 @@
                     image_size: col.image_size || 'thumbnail',
                     image_custom_w: col.image_custom_w || 100,
                     image_custom_h: col.image_custom_h || 100,
+                    filter_type: col.filter_type || '',
                     sort_order: index,
                 };
             }),

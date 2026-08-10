@@ -275,10 +275,21 @@ class WTB_Admin_Page {
                            value="<?php echo esc_attr( $post->post_title ); ?>"
                            placeholder="<?php esc_attr_e( 'Nama Tabel', 'wp-table-builder' ); ?>">
                 </div>
-                <button id="wtb-btn-save" type="button" class="wtb-btn-primary wtb-btn-save">
-                    <span class="dashicons dashicons-saved" style="font-size:16px; width:16px; height:16px;" aria-hidden="true"></span>
-                    <?php esc_html_e( 'Simpan Tabel', 'wp-table-builder' ); ?>
-                </button>
+                <div style="display:flex; gap:8px;">
+                    <button id="wtb-btn-export-csv" type="button" class="wtb-btn-action" style="background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 12px; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:6px; cursor:pointer;" title="<?php esc_attr_e( 'Export Data ke CSV', 'wp-table-builder' ); ?>">
+                        <span class="dashicons dashicons-download" style="font-size:16px; width:16px; height:16px; margin:0;" aria-hidden="true"></span>
+                        <?php esc_html_e( 'Export CSV', 'wp-table-builder' ); ?>
+                    </button>
+                    <button id="wtb-btn-import-csv" type="button" class="wtb-btn-action" style="background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 12px; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:6px; cursor:pointer;" title="<?php esc_attr_e( 'Import Data dari CSV (Tabel Manual saja)', 'wp-table-builder' ); ?>">
+                        <span class="dashicons dashicons-upload" style="font-size:16px; width:16px; height:16px; margin:0;" aria-hidden="true"></span>
+                        <?php esc_html_e( 'Import CSV', 'wp-table-builder' ); ?>
+                    </button>
+                    <input type="file" id="wtb-csv-upload" accept=".csv" style="display:none;" />
+                    <button id="wtb-btn-save" type="button" class="wtb-btn-primary wtb-btn-save">
+                        <span class="dashicons dashicons-saved" style="font-size:16px; width:16px; height:16px;" aria-hidden="true"></span>
+                        <?php esc_html_e( 'Simpan Tabel', 'wp-table-builder' ); ?>
+                    </button>
+                </div>
             </div>
 
             <div id="wtb-save-notice" class="wtb-save-notice notice" style="display:none;" role="alert"></div>

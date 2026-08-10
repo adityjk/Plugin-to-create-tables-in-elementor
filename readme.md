@@ -12,9 +12,13 @@
 - 🔍 **Pencarian & Pengurutan Interaktif** — Pengunjung dapat melakukan pencarian live (*search box*) dan mengurutkan kolom (*sorting*) secara langsung di frontend via DataTables.js.
 - 📑 **Pagination Fleksibel** — Mendukung mode Nomor Halaman (*Numbers*) dan *Indicator Dots*, dilengkapi kustomisasi teks dan icon untuk tombol Sebelum (*Prev*) / Sesudah (*Next*).
 - 📱 **Desain Responsif Mobile** — Pilihan mode tampilan mobile: *Horizontal Scroll* atau *Collapsible Child Rows*.
-- ⚡ **Performa Tinggi (Server-Side AJAX)** — Otomatis beralih ke mode Server-Side pagination via REST API untuk tabel besar yang memiliki lebih dari 200 baris data.
+- ⚡ **Performa Tinggi (Server-Side AJAX)** — Otomatis beralih ke mode Server-Side pagination via REST API untuk tabel besar yang memiliki lebih dari 200 baris data atau untuk sumber data WP Posts.
 - 🧱 **Gutenberg Block & Shortcode** — Tampilkan tabel di mana saja menggunakan Block Gutenberg native atau Shortcode `[wtb_table id="X"]`.
 - 📋 **Fitur Duplikat Tabel** — Salin tabel beserta struktur kolom dan seluruh baris datanya dalam 1-klik.
+- 📥 **Export & Import CSV** — Ekspor tabel ke file CSV berformat UTF-8 BOM, dan impor file CSV untuk memasukkan data secara instan.
+- 🔗 **Integrasi WP Posts** — Mengambil data otomatis dari WordPress Posts/Custom Post Types dan memetakannya ke kolom secara dinamis (Thumbnail, Judul, Kategori, Tag).
+- 🕵️ **Advanced Column Filters** — Sediakan filter Dropdown Select (kategori) atau pencarian teks (Text Input) untuk masing-masing kolom dengan integrasi AJAX Server-Side.
+- 🤖 **Anti-Spam Form (Honeypot)** — Validasi bot dan spam via Honeypot tersembunyi pada form pengisian frontend pengunjung.
 
 ---
 
@@ -115,7 +119,8 @@ Repositori ini sudah dilengkapi dengan konfigurasi **Docker Compose** untuk kemu
 - **Sanitasi Data Ketat**: Menggunakan `wp_kses_post()` untuk Rich Text/HTML, `sanitize_text_field()` untuk teks biasa, `esc_url_raw()` untuk URL, dan `sanitize_hex_color()` untuk kode warna.
 - **Prepared Statements**: Semua query database MySQL berjalan dengan `$wpdb->prepare()` untuk mencegah SQL Injection.
 - **Nonce & Capability Check**: Semua REST API endpoint dan aksi admin dilindungi autentikasi role `manage_options` dan token Nonce.
-- **DataTables AJAX Pagination**: Pengolahan data tabel besar secara server-side melalui REST API untuk menjaga kecepatan loading browser pengunjung.
+- **DataTables AJAX Pagination**: Pengolahan data tabel besar secara server-side melalui REST API untuk menjaga kecepatan loading browser pengunjung, juga teroptimasi untuk query `WP_Posts` dalam skala besar.
+- **Anti-Spam Validasi**: Melindungi pengisian formulir dengan Honeypot Field (`wtb_website_url`) tersembunyi yang divalidasi langsung pada layer API backend.
 
 ---
 

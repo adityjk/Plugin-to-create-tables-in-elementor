@@ -65,6 +65,20 @@ class WTB_Rest_Controller {
             'permission_callback' => '__return_true',
             'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
         ] );
+
+        register_rest_route( self::NAMESPACE, '/tables/(?P<id>\d+)/export_csv', [
+            'methods'             => WP_REST_Server::READABLE,
+            'callback'            => [ __CLASS__, 'export_csv' ],
+            'permission_callback' => [ __CLASS__, 'admin_permission' ],
+            'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
+        ] );
+
+        register_rest_route( self::NAMESPACE, '/tables/(?P<id>\d+)/import_csv', [
+            'methods'             => WP_REST_Server::CREATABLE,
+            'callback'            => [ __CLASS__, 'import_csv' ],
+            'permission_callback' => [ __CLASS__, 'admin_permission' ],
+            'args'                => [ 'id' => [ 'sanitize_callback' => 'absint' ] ],
+        ] );
     }
 
     public static function admin_permission(): bool {
@@ -386,32 +400,148 @@ class WTB_Rest_Controller {
             return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wp-table-builder' ), [ 'status' => 404 ] );
         }
 
-        $draw   = absint( $request->get_param( 'draw' )   ?? 1 );
-        $start  = absint( $request->get_param( 'start' )  ?? 0 );
-        $length = absint( $request->get_param( 'length' ) ?? 10 );
-        $search = sanitize_text_field( $request->get_param( 'search' ) ?? '' );
+        $draw    = absint( $request->get_param( 'draw' )   ?? 1 );
+        $start   = absint( $request->get_param( 'start' )  ?? 0 );
+        $length  = absint( $request->get_param( 'length' ) ?? 10 );
+        $search  = sanitize_text_field( $request->get_param( 'search' )['value'] ?? ( $request->get_param( 'search' ) ?? '' ) );
+        $req_cols = $request->get_param( 'columns' ) ?: [];
 
-        $total = (int) $wpdb->get_var(
-            $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d AND (status = 'published' OR status IS NULL OR status = '')", $table_id )
+        $settings_raw = get_post_meta( $table_id, '_wtb_settings', true );
+        $settings     = WTB_Sanitizer::table_settings(
+            $settings_raw ? (array) json_decode( $settings_raw, true ) : []
         );
 
-        $where    = $wpdb->prepare( "WHERE table_id = %d AND (status = 'published' OR status IS NULL OR status = '')", $table_id );
-        $filtered = $total;
+        $data_source = $settings['data_source'] ?? 'manual';
+        $data = [];
+        $total = 0;
+        $filtered = 0;
 
-        if ( $search ) {
-            $like     = '%' . $wpdb->esc_like( $search ) . '%';
-            $where   .= $wpdb->prepare( ' AND cells_data LIKE %s', $like );
+        $columns = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, label, data_type, settings FROM {$wpdb->prefix}wtb_columns WHERE table_id = %d ORDER BY sort_order ASC", $table_id
+        ), ARRAY_A );
+
+        if ( $data_source === 'wp_posts' ) {
+            $post_type = $settings['post_type'] ?? 'post';
+            
+            $query_args = [
+                'post_type'      => $post_type,
+                'post_status'    => 'publish',
+                'posts_per_page' => $length,
+                'offset'         => $start,
+                's'              => $search,
+            ];
+
+            // Advanced Column Filter for WP Posts (Taxonomy only for now due to WP_Query limits without meta)
+            $tax_query = [];
+            foreach ( $req_cols as $index => $col_req ) {
+                if ( ! empty( $col_req['search']['value'] ) && isset( $columns[$index] ) ) {
+                    $search_val = sanitize_text_field( $col_req['search']['value'] );
+                    $col_data = $columns[$index];
+                    $c_settings = $col_data['settings'] ? json_decode( $col_data['settings'], true ) : [];
+                    $pf = $c_settings['post_field'] ?? '';
+                    
+                    if ( $pf === 'category' || $pf === 'tag' ) {
+                        $tax = $pf === 'category' ? 'category' : 'post_tag';
+                        $tax_query[] = [
+                            'taxonomy' => $tax,
+                            'field'    => 'name',
+                            'terms'    => explode( ',', $search_val ),
+                        ];
+                    } elseif ( $pf === 'title' ) {
+                        // Title search is tricky to stack with global 's', we'll rely on global 's' for title
+                    }
+                }
+            }
+            if ( ! empty( $tax_query ) ) {
+                $tax_query['relation'] = 'AND';
+                $query_args['tax_query'] = $tax_query;
+            }
+
+            $wp_query = new WP_Query( $query_args );
+            
+            $total_query = new WP_Query([
+                'post_type' => $post_type,
+                'post_status' => 'publish',
+                'fields' => 'ids',
+                'posts_per_page' => -1
+            ]);
+            $total = $total_query->found_posts;
+            $filtered = $wp_query->found_posts;
+
+            if ( $wp_query->have_posts() ) {
+                while ( $wp_query->have_posts() ) {
+                    $wp_query->the_post();
+                    $post_id = get_the_ID();
+                    $cells_data = [];
+                    foreach ( $columns as $col ) {
+                        $cid = (string) $col['id'];
+                        $val = '';
+                        $c_settings = $col['settings'] ? json_decode( $col['settings'], true ) : [];
+                        $pf  = $c_settings['post_field'] ?? '';
+
+                        if ( $pf === 'title' ) $val = get_the_title();
+                        elseif ( $pf === 'content' ) $val = get_the_content();
+                        elseif ( $pf === 'excerpt' ) $val = get_the_excerpt();
+                        elseif ( $pf === 'date' ) $val = get_the_date();
+                        elseif ( $pf === 'author' ) $val = get_the_author();
+                        elseif ( $pf === 'category' || $pf === 'tag' ) {
+                            $tax = $pf === 'category' ? 'category' : 'post_tag';
+                            $terms = get_the_terms( $post_id, $tax );
+                            if ( $terms && ! is_wp_error( $terms ) ) {
+                                $names = wp_list_pluck( $terms, 'name' );
+                                $val = implode( ', ', $names );
+                            }
+                        } elseif ( $pf === 'thumbnail' ) {
+                            if ( has_post_thumbnail() ) {
+                                $isize = $c_settings['image_size'] ?? 'thumbnail';
+                                $img = wp_get_attachment_image_src( get_post_thumbnail_id(), $isize === 'custom' ? 'full' : $isize );
+                                $val = $img ? $img[0] : '';
+                            }
+                        }
+                        $cells_data[ $cid ] = $val;
+                    }
+                    $data[] = $cells_data;
+                }
+                wp_reset_postdata();
+            }
+
+        } else {
+            // Manual Data Source
+            $total = (int) $wpdb->get_var(
+                $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d AND (status = 'published' OR status IS NULL OR status = '')", $table_id )
+            );
+
+            $where = $wpdb->prepare( "WHERE table_id = %d AND (status = 'published' OR status IS NULL OR status = '')", $table_id );
+
+            // Global Search
+            if ( $search ) {
+                $like = '%' . $wpdb->esc_like( $search ) . '%';
+                $where .= $wpdb->prepare( ' AND cells_data LIKE %s', $like );
+            }
+
+            // Column-specific advanced search
+            foreach ( $req_cols as $index => $col_req ) {
+                if ( ! empty( $col_req['search']['value'] ) && isset( $columns[$index] ) ) {
+                    $search_val = sanitize_text_field( $col_req['search']['value'] );
+                    $col_id = $columns[$index]['id'];
+                    $like = '%' . $wpdb->esc_like( $search_val ) . '%';
+                    
+                    // Use JSON_EXTRACT to search specific column value
+                    // MySQL 5.7+ required. If not available, fallback to basic LIKE.
+                    $where .= $wpdb->prepare( " AND JSON_UNQUOTE(JSON_EXTRACT(cells_data, '$.\"%d\"')) LIKE %s", $col_id, $like );
+                }
+            }
+
             $filtered = (int) $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->prefix}wtb_rows $where" );
+
+            $rows_raw = $wpdb->get_results(
+                "SELECT cells_data FROM {$wpdb->prefix}wtb_rows $where ORDER BY sort_order ASC LIMIT $length OFFSET $start", ARRAY_A
+            );
+
+            $data = array_map( function( $row ) {
+                return $row['cells_data'] ? (array) json_decode( $row['cells_data'], true ) : [];
+            }, $rows_raw );
         }
-
-        $rows_raw = $wpdb->get_results(
-            "SELECT cells_data FROM {$wpdb->prefix}wtb_rows $where ORDER BY sort_order ASC LIMIT $length OFFSET $start",
-            ARRAY_A
-        );
-
-        $data = array_map( function( $row ) {
-            return $row['cells_data'] ? (array) json_decode( $row['cells_data'], true ) : [];
-        }, $rows_raw );
 
         return rest_ensure_response( [
             'draw'            => $draw,
@@ -429,6 +559,13 @@ class WTB_Rest_Controller {
 
         if ( ! $post || $post->post_type !== 'wtb_table' ) {
             return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wp-table-builder' ), [ 'status' => 404 ] );
+        }
+
+        $params = $request->get_params();
+        
+        // Anti-spam Honeypot Check
+        if ( ! empty( $params['wtb_website_url'] ) ) {
+            return new WP_Error( 'spam_detected', __( 'Spam terdeteksi.', 'wp-table-builder' ), [ 'status' => 403 ] );
         }
 
         $settings_raw = get_post_meta( $table_id, '_wtb_settings', true );
@@ -534,5 +671,126 @@ class WTB_Rest_Controller {
             'message' => $message,
             'status'  => $status,
         ] );
+    }
+
+    public static function export_csv( WP_REST_Request $request ) {
+        global $wpdb;
+        $table_id = (int) $request->get_param( 'id' );
+        $post     = get_post( $table_id );
+
+        if ( ! $post || $post->post_type !== 'wtb_table' ) {
+            wp_die( 'Tabel tidak ditemukan.' );
+        }
+
+        $columns = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, label, data_type FROM {$wpdb->prefix}wtb_columns WHERE table_id = %d ORDER BY sort_order ASC", $table_id
+        ), ARRAY_A );
+
+        if ( empty( $columns ) ) {
+            wp_die( 'Tabel kosong.' );
+        }
+
+        $rows = $wpdb->get_results( $wpdb->prepare(
+            "SELECT cells_data FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d ORDER BY sort_order ASC", $table_id
+        ), ARRAY_A );
+
+        header( 'Content-Type: text/csv; charset=utf-8' );
+        header( 'Content-Disposition: attachment; filename="table-' . $table_id . '.csv"' );
+        
+        $output = fopen( 'php://output', 'w' );
+        fputs( $output, "\xEF\xBB\xBF" ); // BOM for UTF-8 Excel compatibility
+        
+        $header_row = [];
+        foreach ( $columns as $col ) {
+            $header_row[] = $col['label'];
+        }
+        fputcsv( $output, $header_row );
+
+        foreach ( $rows as $row ) {
+            $cells = $row['cells_data'] ? (array) json_decode( $row['cells_data'], true ) : [];
+            $data_row = [];
+            foreach ( $columns as $col ) {
+                $data_row[] = isset( $cells[ $col['id'] ] ) ? $cells[ $col['id'] ] : '';
+            }
+            fputcsv( $output, $data_row );
+        }
+        
+        fclose( $output );
+        exit;
+    }
+
+    public static function import_csv( WP_REST_Request $request ) {
+        global $wpdb;
+        $table_id = (int) $request->get_param( 'id' );
+
+        $files = $request->get_file_params();
+        if ( empty( $files['csv_file'] ) || $files['csv_file']['error'] !== UPLOAD_ERR_OK ) {
+            return new WP_Error( 'upload_error', 'Gagal mengunggah file.', [ 'status' => 400 ] );
+        }
+
+        $file_path = $files['csv_file']['tmp_name'];
+        if ( ! is_readable( $file_path ) ) {
+            return new WP_Error( 'file_error', 'File tidak dapat dibaca.', [ 'status' => 400 ] );
+        }
+
+        $handle = fopen( $file_path, 'r' );
+        if ( false === $handle ) {
+            return new WP_Error( 'file_error', 'Gagal membuka file.', [ 'status' => 500 ] );
+        }
+
+        // BOM removal
+        $bom = fread( $handle, 3 );
+        if ( $bom !== "\xEF\xBB\xBF" ) {
+            rewind( $handle );
+        }
+
+        $header = fgetcsv( $handle );
+        if ( ! $header ) {
+            fclose( $handle );
+            return new WP_Error( 'invalid_csv', 'CSV tidak memiliki header valid.', [ 'status' => 400 ] );
+        }
+
+        $columns = $wpdb->get_results( $wpdb->prepare(
+            "SELECT id, label, data_type FROM {$wpdb->prefix}wtb_columns WHERE table_id = %d ORDER BY sort_order ASC", $table_id
+        ), ARRAY_A );
+        
+        $col_map = []; // Maps header index to col_id
+        foreach ( $header as $index => $col_label ) {
+            $col_label = trim( $col_label );
+            foreach ( $columns as $col ) {
+                if ( mb_strtolower( trim( $col['label'] ) ) === mb_strtolower( $col_label ) ) {
+                    $col_map[ $index ] = [
+                        'id' => $col['id'],
+                        'type' => $col['data_type']
+                    ];
+                    break;
+                }
+            }
+        }
+
+        $max_order = (int) $wpdb->get_var( $wpdb->prepare( "SELECT MAX(sort_order) FROM {$wpdb->prefix}wtb_rows WHERE table_id = %d", $table_id ) );
+
+        while ( ( $row = fgetcsv( $handle ) ) !== false ) {
+            $cells_clean = [];
+            foreach ( $row as $index => $value ) {
+                if ( isset( $col_map[ $index ] ) ) {
+                    $cid = $col_map[ $index ]['id'];
+                    $ctype = $col_map[ $index ]['type'];
+                    $cells_clean[ $cid ] = WTB_Sanitizer::cell_value( $value, $ctype );
+                }
+            }
+            if ( ! empty( $cells_clean ) ) {
+                $max_order++;
+                $wpdb->insert( $wpdb->prefix . 'wtb_rows', [
+                    'table_id'   => $table_id,
+                    'cells_data' => wp_json_encode( $cells_clean ),
+                    'sort_order' => $max_order,
+                    'status'     => 'published'
+                ], [ '%d', '%s', '%d', '%s' ] );
+            }
+        }
+        
+        fclose( $handle );
+        return rest_ensure_response( [ 'success' => true ] );
     }
 }
