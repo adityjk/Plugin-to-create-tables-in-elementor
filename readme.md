@@ -104,6 +104,155 @@ Salin shortcode yang tersedia di halaman admin dan tempelkan di mana saja:
 
 ---
 
+## 🎨 Panduan Custom CSS & Class Names
+
+Plugin **WP Table Builder** dirancang menggunakan class-class CSS terstruktur (berawalan `wtb-`) yang bersih, sehingga sangat mudah disesuaikan (*customized*) menggunakan CSS tambahan.
+
+### 📍 Tempat Menambahkan Custom CSS
+1. **Elementor**: Klik Widget WP Table Builder > Buka tab **Advanced** > Ketik CSS pada panel **Custom CSS**.
+2. **WordPress Customizer**: Di Admin WordPress, buka **Tampilan (Appearance) > Sesuaikan (Customize) > CSS Tambahan (Additional CSS)**.
+3. **Child Theme**: Tambahkan kode CSS pada file `style.css` milik tema/child theme Anda.
+
+---
+
+### 📋 Daftar Class Name & Selector CSS
+
+#### 1. Container & Struktur Tabel
+| Selector / Class Name | Deskripsi Elemen |
+|---|---|
+| `.wtb-table-wrap` | Container pembungkus utama seluruh elemen tabel & kontrol navigasi |
+| `#wtb-wrap-X` / `.wtb-wrap-X` | Selector khusus per tabel berdasarkan ID (ganti `X` dengan ID tabel, misal: `#wtb-wrap-12`) |
+| `.wtb-table-scroll` | Pembungkus scrollbar responsif |
+| `.wtb-table` | Elemen utama `<table>` |
+| `#wtb-table-X` | Selector elemen `<table>` spesifik berdasarkan ID tabel (misal: `#wtb-table-12`) |
+| `.wtb-table thead tr th` | Sel Header tabel (`<th>`) |
+| `.wtb-table tbody tr td` | Sel Isi tabel (`<td>`) |
+| `.wtb-table tbody tr:hover td` | Efek hover pada baris tabel saat kursor diarahkan |
+| `.wtb-table tbody tr:nth-child(even)` | Baris tabel selang-seling (stripe background) |
+| `.wtb-th-inner` | Wrapper konten judul & icon filter di dalam header |
+| `.wtb-th-label-text` | Teks judul header kolom |
+
+#### 2. Tipe Data Sel (Cell Types)
+| Selector / Class Name | Deskripsi Elemen |
+|---|---|
+| `.wtb-cell-img` | Elemen thumbnail gambar (`<img>`) |
+| `.wtb-cell-btn` | Elemen tombol Call-to-Action (`<span>` / `<a>`) |
+| `.wtb-cell-badge` | Elemen badge / label status (`<span>`) |
+| `.wtb-cell-rating` | Penampung teks bintang rating (`<span>`) |
+| `.wtb-cell-file-wrap` | Wrapper tombol unduh & preview file |
+| `.wtb-cell-file` | Tombol/link unduh file utama |
+| `.wtb-file-icon` | Icon SVG file |
+| `.wtb-btn-file-preview` | Tombol trigger modal preview file |
+
+#### 3. Search Box, Dropdown & Pagination (DataTables)
+| Selector / Class Name | Deskripsi Elemen |
+|---|---|
+| `.wtb-table-wrap .dataTables_wrapper` | Wrapper utama seluruh kontrol navigasi & pencarian |
+| `.wtb-table-wrap .dataTables_filter` | Wrapper area pencarian (*Search Box*) |
+| `.wtb-table-wrap .dataTables_filter input[type="search"]` | Field input teks pencarian |
+| `.wtb-table-wrap .dataTables_length` | Wrapper penentu jumlah baris per halaman |
+| `.wtb-table-wrap .dataTables_length select` | Dropdown jumlah baris |
+| `.wtb-table-wrap .dataTables_info` | Teks status data (*Showing 1 to 10 of N entries*) |
+| `.wtb-table-wrap .dataTables_paginate` | Container tombol navigasi pagination |
+| `.wtb-table-wrap .dataTables_paginate .paginate_button` | Tombol angka halaman / Prev / Next |
+| `.wtb-table-wrap .dataTables_paginate .paginate_button.current` | Tombol halaman yang sedang aktif |
+| `.wtb-table-wrap.wtb-dots-mode .paginate_button` | Indicator titik-titik (*Dots Mode Pagination*) |
+
+#### 4. Filter Kolom Header
+| Selector / Class Name | Deskripsi Elemen |
+|---|---|
+| `.wtb-header-tax-wrap` | Wrapper icon filter di header kolom |
+| `.wtb-header-tax-select` | Dropdown `<select>` filter kategori di header |
+| `.wtb-header-text-filter-wrap` | Wrapper field pencarian teks per kolom |
+| `.wtb-filter-text` | Field input teks pencarian per kolom |
+
+#### 5. Form Pengunjung Frontend (User Form Submission)
+| Selector / Class Name | Deskripsi Elemen |
+|---|---|
+| `.wtb-form-container` / `#wtb-form-container-X` | Container utama formulir penambahan data |
+| `.wtb-form-title` & `.wtb-form-subtitle` | Judul dan petunjuk pengisian form |
+| `.wtb-form-grid` & `.wtb-form-field-group` | Grid layout dan grup input field |
+| `.wtb-form-label` | Teks label input |
+| `.wtb-form-input` & `.wtb-form-textarea` | Field input teks / angka / tanggal / textarea |
+| `.wtb-form-btn-submit` | Tombol submit kirim data |
+| `.wtb-form-response-msg` | Alert box respon setelah form dikirim |
+| `.wtb-msg-success` & `.wtb-msg-error` | Alert sukses (hijau) & alert error (merah) |
+
+---
+
+### 💡 Contoh Kode CSS Praktis
+
+#### A. Mengubah Warna Header & Hover Baris
+```css
+/* Mengubah background header tabel */
+.wtb-table thead tr th {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+/* Mengubah warna hover baris */
+.wtb-table tbody tr:hover td {
+    background-color: #e2e8f0 !important;
+}
+```
+
+#### B. Kustomisasi Tombol CTA (`.wtb-cell-btn`) & Badge (`.wtb-cell-badge`)
+```css
+/* Custom Tombol Call to Action */
+.wtb-cell-btn {
+    background-color: #10b981 !important; /* Hijau Emerald */
+    color: #ffffff !important;
+    border-radius: 8px !important;
+    padding: 8px 16px !important;
+    box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3) !important;
+}
+
+.wtb-cell-btn:hover {
+    background-color: #059669 !important;
+    transform: translateY(-2px);
+}
+
+/* Custom Badge Status */
+.wtb-cell-badge {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+}
+```
+
+#### C. Kustomisasi Field Search & Tombol Pagination
+```css
+/* Mengubah bentuk input search menjadi rounded pill */
+.wtb-table-wrap .dataTables_filter input[type="search"] {
+    border-radius: 20px !important;
+    padding: 8px 16px !important;
+    border: 2px solid #cbd5e1 !important;
+}
+
+/* Mengubah warna tombol pagination yang aktif */
+.wtb-table-wrap .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #06b6d4 !important; /* Cyan */
+    border-color: #06b6d4 !important;
+    color: #ffffff !important;
+}
+```
+
+#### D. Mentarget Tabel Spesifik Saja (Berdasarkan ID Tabel)
+Jika Anda hanya ingin mengubah **Tabel ID 12** tanpa mempengaruhi tabel lain:
+```css
+/* Hanya berlaku untuk tabel ID 12 */
+#wtb-wrap-12 .wtb-table thead tr th {
+    background-color: #8b5cf6 !important; /* Purple */
+}
+
+#wtb-wrap-12 .wtb-cell-btn {
+    background-color: #ec4899 !important; /* Pink */
+}
+```
+
+---
+
 ## 🏷️ Tipe Data Cell yang Didukung
 
 | Tipe Data | Deskripsi | Tampilan di Editor / Frontend |
