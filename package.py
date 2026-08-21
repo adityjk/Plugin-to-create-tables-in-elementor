@@ -3,7 +3,7 @@ import zipfile
 import shutil
 
 plugin_slug = "wp-table-builder"
-version = "1.1.0"
+version = "1.1.1"
 zip_name = f"{plugin_slug}-{version}.zip"
 target_dir = "dist"
 
@@ -16,7 +16,7 @@ print(f"Menyiapkan file ZIP: {zip_path}")
 source_dir = os.path.join("wp-content", "plugins", plugin_slug)
 
 def should_exclude(path):
-    excludes = ['.git', 'node_modules', 'vendor', 'tests', 'phpunit.xml']
+    excludes = ['.git', 'node_modules', 'tests', 'phpunit.xml']
     for ex in excludes:
         if ex in path:
             return True

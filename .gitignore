@@ -38,6 +38,7 @@ build/
 # PHP & Composer
 # =====================================================================
 vendor/
+!wp-content/plugins/wp-table-builder/vendor/
 composer.lock
 *.cache
 

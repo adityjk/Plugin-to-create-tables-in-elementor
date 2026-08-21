@@ -1,6 +1,10 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
+/**
+ * Internal non-public CPT: stores each table's title + _wtb_settings meta.
+ * Column/row data lives in the custom tables (see WTB_Table_Repository).
+ */
 class WTB_Post_Type {
 
     public static function init() {

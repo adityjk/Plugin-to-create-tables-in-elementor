@@ -7,22 +7,24 @@ class WTB_Activator {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
 
-        $sql_columns = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}wtb_columns (
+        $sql_columns = "CREATE TABLE {$wpdb->prefix}wtb_columns (
             id          BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             table_id    BIGINT(20) UNSIGNED NOT NULL,
             label       VARCHAR(255) NOT NULL DEFAULT '',
             data_type   VARCHAR(50)  NOT NULL DEFAULT 'text',
-            settings    LONGTEXT,
+            settings    LONGTEXT NULL,
             sort_order  INT          NOT NULL DEFAULT 0,
             created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
             PRIMARY KEY  (id),
             KEY table_id (table_id)
         ) $charset_collate;";
 
-        $sql_rows = "CREATE TABLE IF NOT EXISTS {$wpdb->prefix}wtb_rows (
+        // One row per record; cell values live as a JSON object in cells_data
+        // keyed by column id — avoids heavy JOINs for sparse tables.
+        $sql_rows = "CREATE TABLE {$wpdb->prefix}wtb_rows (
             id          BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
             table_id    BIGINT(20) UNSIGNED NOT NULL,
-            cells_data  LONGTEXT,
+            cells_data  LONGTEXT NULL,
             sort_order  INT          NOT NULL DEFAULT 0,
             status      VARCHAR(20)  NOT NULL DEFAULT 'published',
             created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
