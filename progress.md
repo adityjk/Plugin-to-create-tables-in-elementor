@@ -38,7 +38,7 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 7 | admin | `includes/class-admin-menu.php` | — | pending |
 | 7 | admin | `class-admin-table-list.php` | — | pending |
 | 7 | admin | `class-admin-table-editor.php` | — | pending |
-| 7 | admin | `class-debug-log.php` | — | pending |
+| 7 | admin | `includes/class-debug-log.php` | 98 | done |
 | 8 | bootstrap | `wp-table-builder.php` | — | pending |
 | 8 | bootstrap | `uninstall.php` | — | pending |
 | 8 | bootstrap | `readme.txt` | — | pending |
@@ -69,7 +69,8 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 - `wtb-frontend` / `wtb-block-editor` script/style handles: enqueued by
   embeds, registered later in bootstrap.
 - `WTB_Debug_Log::add()` called in `WTB_Rest_Submissions::submit()`
-  and `WTB_Elementor_Form_Action::run()`; class arrives in step 7.
+  and `WTB_Elementor_Form_Action::run()`; forward reference resolved
+  (class-debug-log.php written).
 - Bootstrap must gate Elementor requires on `elementor/loaded`
   (widget/tag/action/hook extend Elementor classes) and register the
   asset handles above.
