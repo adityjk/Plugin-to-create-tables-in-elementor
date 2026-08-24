@@ -34,7 +34,7 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 6 | Elementor | `includes/class-elementor-widget.php` | 241 | done |
 | 6 | Elementor | `includes/class-elementor-dynamic-tag.php` | 225 | done |
 | 6 | Elementor | `includes/class-elementor-form-action.php` | 276 | done |
-| 6 | Elementor | `includes/class-elementor-form-hook.php` | — | next |
+| 6 | Elementor | `includes/class-elementor-form-hook.php` | 42 | done |
 | 7 | admin | `includes/class-admin-menu.php` | — | pending |
 | 7 | admin | `class-admin-table-list.php` | — | pending |
 | 7 | admin | `class-admin-table-editor.php` | — | pending |
@@ -76,28 +76,10 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 
 ## Remaining work, in detail
 
-### Step 6 — Elementor (in progress)
-- **`class-elementor-dynamic-tag.php`** (`WTB_Elementor_Dynamic_Tag`):
-  extends `\Elementor\Core\DynamicTags\Tag`. Controls: table select,
-  column select (populated from the chosen table's columns), row
-  number. `get_value()` returns the plain-text cell value for
-  table+column+row; unknown ids return ''. Registered on
-  `elementor/dynamic_tags/register_tags`; file required only when
-  Elementor is active. Categories: text/number/date/url cells only
-  (image/post cells are IDs, not display text).
-- **`class-elementor-form-action.php`** (`WTB_Elementor_Form_Action`):
-  extends `\ElementorPro\Modules\Forms\Classes\Action_Base`.
-  `register_settings_controls()` adds: target table select + optional
-  field→column map. `run()` builds a cells array from submitted form
-  fields and calls `WTB_Table_Storage::insert_row()` with pending/
-  published per the table's require_approval setting — same path as
-  REST submit, no duplicate persistence logic.
-- **`class-elementor-form-hook.php`** (`WTB_Elementor_Form_Hook`):
-  registers the action class on `elementor_pro/forms/actions/register`
-  and self-guards with `class_exists( '\ElementorPro\Plugin' )` so
-  Pro's absence is silent. This is the fix for v1's "silent
-  registration failure" bug — detection lives here, business logic in
-  the action class.
+### Step 6 — Elementor (done)
+All three classes written; specs above superseded by the code itself.
+Dynamic-tag column picker and form-action override map notes are in
+"Decisions locked in so far".
 
 ### Step 7 — Admin UI
 - **`class-admin-menu.php`** (`WTB_Admin_Menu`): `add_menu_page` with
