@@ -44,7 +44,9 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 8 | bootstrap | `readme.txt` | 77 | done |
 | 9 | assets | `assets/css/frontend.css` | 105 | done |
 | 9 | assets | `assets/css/admin.css` | 183 | done |
-| 9 | assets | `assets/js/*` (3 files) | — | pending |
+| 9 | assets | `assets/js/frontend.js` | 256 | done |
+| 9 | assets | `assets/js/block-editor.js` | — | next |
+| 9 | assets | `assets/js/admin-builder.js` | — | pending |
 
 ## Decisions locked in so far
 - Data types: `text, number, date, image, url, post`; image/post cells
@@ -71,6 +73,9 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 - Admin JS contract: shared REST root + nonce live on the `.wtb-admin`
   wrapper as data attrs; per-view config lives in data-config JSON;
   buttons carry data-wtb-action/data-id/data-confirm.
+- Renderer forms carry `data-rest-base` (standalone form shortcode has
+  no table wrap to read it from). frontend.js polls only when a config
+  carries pollSeconds — no renderer emits it yet.
 
 ## Open forward references (resolved)
 - `wtb-frontend` / `wtb-block-editor` handles: registered in the

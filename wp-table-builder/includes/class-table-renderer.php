@@ -85,7 +85,11 @@ class WTB_Table_Renderer {
 			: __( 'Submit', 'wp-table-builder' );
 
 		$html = '<form class="wtb-form" method="post" data-table-id="'
-			. $table_id . '">';
+			. $table_id . '"'
+			// Forms can render standalone (no table wrap nearby), so
+			// they carry their own REST base for frontend.js.
+			. ' data-rest-base="' . esc_url_raw( rest_url( 'wtb/v1' ) )
+			. '">';
 		$html .= '<input type="hidden" name="wtb_form_nonce" value="'
 			. esc_attr( wp_create_nonce( 'wtb_form_submit' ) ) . '">';
 
