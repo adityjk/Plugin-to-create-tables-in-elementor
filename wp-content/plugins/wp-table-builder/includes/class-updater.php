@@ -124,33 +124,43 @@ class WTB_Updater {
 	/**
 	 * Build the plugin info object consumed by WordPress core.
 	 *
-	 * @param array $release Parsed release data.
+	 * @param array|null $release Parsed release data, or null for local fallback.
 	 * @return object
 	 */
-	private static function to_plugin_info( array $release ): object {
+	private static function to_plugin_info( ?array $release ): object {
+		$version      = $release['version'] ?? WTB_VERSION;
+		$download_url = $release['download_url'] ?? '';
+		$changelog    = $release['changelog'] ?? '';
+
 		return (object) [
 			'name'          => 'WP Table Builder',
 			'slug'          => self::slug(),
 			'plugin'        => self::basename(),
-			'version'       => $release['version'],
-			'new_version'   => $release['version'],
-			'url'           => $release['html_url'],
-			'package'       => $release['download_url'],
-			'download_link' => $release['download_url'],
+			'version'       => $version,
+			'new_version'   => $version,
+			'url'           => $release['html_url'] ?? 'https://github.com/' . self::GITHUB_REPO,
+			'package'       => $download_url,
+			'download_link' => $download_url,
 			'requires'      => '5.0',
 			'requires_php'  => '7.1',
 			'tested'        => get_bloginfo( 'version' ),
-			'last_updated'  => $release['published_at'],
+			'last_updated'  => $release['published_at'] ?? gmdate( 'c' ),
 			'sections'      => [
 				'description' => '<p>Plugin visual untuk membuat dan mengelola tabel kustom di WordPress. Mendukung Gutenberg Block, Elementor Widget, dan Shortcode dengan search, sort, filter, serta pagination via DataTables.js.</p>',
-				'changelog'   => '<p><strong>Versi ' . esc_html( $release['version'] ) . '</strong></p>'
-					. wpautop( wp_kses_post( $release['changelog'] ) ),
+				'changelog'   => '<p><strong>Versi ' . esc_html( $version ) . '</strong></p>'
+					. wpautop( wp_kses_post( $changelog ) ),
 			],
 		];
 	}
 
 	/**
 	 * Inject update data into the update_plugins transient.
+	 *
+	 * The slug "wp-table-builder" also exists on wordpress.org (a different
+	 * plugin by dotcamp), so core's own check would otherwise offer to
+	 * "update" this plugin to that one. This basename is therefore claimed
+	 * exclusively: any wordpress.org entry is stripped before our own data,
+	 * when available, replaces it.
 	 *
 	 * @param object|false $transient Update transient.
 	 * @return object|false
@@ -159,6 +169,11 @@ class WTB_Updater {
 		if ( ! is_object( $transient ) || empty( $transient->checked ) ) {
 			return $transient;
 		}
+
+		unset(
+			$transient->response[ self::basename() ],
+			$transient->no_update[ self::basename() ]
+		);
 
 		$release = self::get_release();
 
@@ -188,13 +203,9 @@ class WTB_Updater {
 			return $result;
 		}
 
-		$release = self::get_release();
-
-		if ( null === $release ) {
-			return $result;
-		}
-
-		return self::to_plugin_info( $release );
+		// Always short-circuit: falling through would let the wordpress.org
+		// API return details for dotcamp's unrelated "wp-table-builder".
+		return self::to_plugin_info( self::get_release() );
 	}
 
 	/**
