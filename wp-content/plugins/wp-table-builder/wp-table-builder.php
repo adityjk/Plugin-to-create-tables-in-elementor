@@ -32,7 +32,6 @@ require_once WTB_PLUGIN_DIR . 'includes/class-csv.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-admin-page.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-integration.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-action.php';
-require_once WTB_PLUGIN_DIR . 'includes/class-elementor-dynamic-tag.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-block.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-updater.php';
 
@@ -59,9 +58,15 @@ add_action( 'plugins_loaded', function () {
         $widgets_manager->register( new WTB_Elementor_Widget() );
     } );
 
-    add_action( 'elementor/dynamic_tags/register', function ( $dynamic_tags ) {
-        $dynamic_tags->register( new WTB_Elementor_Dynamic_Tag() );
-    } );
+    // The dynamic tag class extends an Elementor class, so it can only be
+    // loaded once Elementor is active (plugins_loaded runs after all plugins).
+    if ( did_action( 'elementor/loaded' ) ) {
+        require_once WTB_PLUGIN_DIR . 'includes/class-elementor-dynamic-tag.php';
+
+        add_action( 'elementor/dynamic_tags/register', function ( $dynamic_tags ) {
+            $dynamic_tags->register( new WTB_Elementor_Dynamic_Tag() );
+        } );
+    }
 
     // Preconnect to Google Fonts so the font dropdown in the Elementor editor loads faster.
     add_action( 'elementor/editor/head', function () {
