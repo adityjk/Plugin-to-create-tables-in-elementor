@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name: WP Table Builder
- * Plugin URI:  https://example.com/wp-table-builder
+ * Plugin URI:  https://github.com/adityjk/Plugin-to-create-tables-in-elementor
  * Description: Plugin WordPress untuk membuat dan mengelola tabel kustom secara visual. Mendukung Gutenberg Block, Elementor Widget, dan Shortcode. Frontend tabel dilengkapi search, sort, filter, dan pagination via DataTables.js.
  * Version:     1.1.1
  * Author:      AdityJK
  * Author URI:  https://example.com
  * License:     GPL-2.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: wp-table-builder
+ * Text Domain: wtb-table-builder
  * Domain Path: /languages
  */
 

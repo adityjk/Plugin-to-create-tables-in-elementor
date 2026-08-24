@@ -25,7 +25,7 @@ class WTB_Updater {
 	}
 
 	/**
-	 * Full plugin basename, e.g. wp-table-builder/wp-table-builder.php
+	 * Full plugin basename, e.g. wtb-table-builder/wtb-table-builder.php
 	 */
 	private static function basename(): string {
 		return plugin_basename( WTB_PLUGIN_FILE );

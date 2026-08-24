@@ -3,7 +3,7 @@ import re
 import zipfile
 import shutil
 
-plugin_slug = "wp-table-builder"
+plugin_slug = "wtb-table-builder"
 target_dir = "dist"
 source_dir = os.path.join("wp-content", "plugins", plugin_slug)
 

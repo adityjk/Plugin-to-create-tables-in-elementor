@@ -335,7 +335,7 @@ class WTB_Table_Repository {
         ] );
 
         if ( is_wp_error( $new_id ) || ! $new_id ) {
-            return new WP_Error( 'duplicate_failed', __( 'Gagal menduplikat tabel.', 'wp-table-builder' ), [ 'status' => 500 ] );
+            return new WP_Error( 'duplicate_failed', __( 'Gagal menduplikat tabel.', 'wtb-table-builder' ), [ 'status' => 500 ] );
         }
 
         $settings_raw = get_post_meta( $source_id, '_wtb_settings', true );

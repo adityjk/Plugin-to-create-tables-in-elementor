@@ -31,7 +31,7 @@ Karena plugin ini bersifat Open Source dan berada di GitHub, Anda bisa menginsta
 
 1. Kunjungi halaman repositori GitHub plugin ini.
 2. Di sebelah kanan, cari bagian **Releases** dan klik versi rilis terbaru.
-3. Di bagian paling bawah halaman rilis tersebut, terdapat bagian bernama **Assets**. Unduh file `wp-table-builder-X.X.X.zip` dari sana. **Ini adalah file instalasi yang benar.**
+3. Di bagian paling bawah halaman rilis tersebut, terdapat bagian bernama **Assets**. Unduh file `wtb-table-builder-X.X.X.zip` dari sana. **Ini adalah file instalasi yang benar.**
 4. Masuk ke Dashboard WordPress Anda, lalu navigasi ke **Plugins > Add New Plugin** (Tambah Baru).
 5. Klik tombol **Upload Plugin** (Unggah Plugin) di bagian atas halaman.
 6. Pilih file `.zip` yang baru saja Anda unduh dari *Releases*, lalu klik **Install Now** (Instal Sekarang).
@@ -66,15 +66,15 @@ Jika Anda melakukan *clone* repositori ini (men-download source code) untuk memo
    ./package.sh
    # atau bisa juga menjalankan: python3 package.py
    ```
-4. Script akan membuat folder baru bernama `dist/`. Di dalamnya akan terdapat file instalasi `.zip` (contoh: `wp-table-builder-1.1.0.zip`).
+4. Script akan membuat folder baru bernama `dist/`. Di dalamnya akan terdapat file instalasi `.zip` (contoh: `wtb-table-builder-1.1.0.zip`).
 5. File ZIP dari folder `dist/` inilah yang valid dan siap diunggah ke Dashboard WordPress.
-   > 💡 Versi pada nama file ZIP kini **otomatis** mengikuti header `Version:` di `wp-table-builder.php` — cukup ubah versi di satu tempat saja.
+   > 💡 Versi pada nama file ZIP kini **otomatis** mengikuti header `Version:` di `wtb-table-builder.php` — cukup ubah versi di satu tempat saja.
 
 ### 🚀 Cara Rilis Versi Baru (Agar Update Muncul Otomatis di WP Admin)
 
 Supaya pengguna menerima notifikasi update langsung dari halaman Plugins, ikuti alur rilis berikut setiap kali ada versi baru:
 
-1. Naikkan versi pada header `Version:` di `wp-content/plugins/wp-table-builder/wp-table-builder.php` (dan konstanta `WTB_VERSION`).
+1. Naikkan versi pada header `Version:` di `wp-content/plugins/wtb-table-builder/wtb-table-builder.php` (dan konstanta `WTB_VERSION`).
 2. Build ZIP: `./package.sh`.
 3. Commit, lalu buat tag yang **harus sama persis dengan nomor versi** (boleh dengan awalan `v`, contoh: `v1.2.0`):
    ```bash
@@ -83,7 +83,7 @@ Supaya pengguna menerima notifikasi update langsung dari halaman Plugins, ikuti 
    ```
 4. Buka GitHub → tab **Releases** → **Draft a new release**, pilih tag tersebut.
 5. Isi judul dan deskripsi changelog (teks ini akan tampil di popup *View details* WordPress).
-6. Pada bagian **Assets**, unggah file ZIP hasil build (contoh: `dist/wp-table-builder-1.2.0.zip`) — **file inilah yang akan diunduh oleh updater**.
+6. Pada bagian **Assets**, unggah file ZIP hasil build (contoh: `dist/wtb-table-builder-1.2.0.zip`) — **file inilah yang akan diunduh oleh updater**.
 7. Klik **Publish release**.
 
 > ⚠️ Catatan penting:

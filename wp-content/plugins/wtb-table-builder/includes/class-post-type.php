@@ -14,8 +14,8 @@ class WTB_Post_Type {
     public static function register() {
         register_post_type( 'wtb_table', [
             'labels'       => [
-                'name'          => __( 'Tables', 'wp-table-builder' ),
-                'singular_name' => __( 'Table',  'wp-table-builder' ),
+                'name'          => __( 'Tables', 'wtb-table-builder' ),
+                'singular_name' => __( 'Table',  'wtb-table-builder' ),
             ],
             'public'       => false,
             'show_ui'      => false,

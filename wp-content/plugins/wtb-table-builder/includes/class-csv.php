@@ -13,12 +13,12 @@ class WTB_CSV {
 
     public static function export( int $table_id ): void {
         if ( ! WTB_Table_Repository::exists( $table_id ) ) {
-            wp_die( esc_html__( 'Tabel tidak ditemukan.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Tabel tidak ditemukan.', 'wtb-table-builder' ) );
         }
 
         $columns = WTB_Table_Repository::get_columns( $table_id );
         if ( empty( $columns ) ) {
-            wp_die( esc_html__( 'Tabel kosong.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Tabel kosong.', 'wtb-table-builder' ) );
         }
 
         $rows = WTB_Table_Repository::get_raw_cells( $table_id );
@@ -68,17 +68,17 @@ class WTB_CSV {
         global $wpdb;
 
         if ( ! WTB_Table_Repository::exists( $table_id ) ) {
-            return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wp-table-builder' ), [ 'status' => 404 ] );
+            return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wtb-table-builder' ), [ 'status' => 404 ] );
         }
 
         $file = $request->get_file_params()['csv_file'] ?? null;
         if ( ! $file || $file['error'] !== UPLOAD_ERR_OK || ! is_readable( $file['tmp_name'] ) ) {
-            return new WP_Error( 'upload_error', __( 'Gagal mengunggah file.', 'wp-table-builder' ), [ 'status' => 400 ] );
+            return new WP_Error( 'upload_error', __( 'Gagal mengunggah file.', 'wtb-table-builder' ), [ 'status' => 400 ] );
         }
 
         $handle = fopen( $file['tmp_name'], 'r' );
         if ( false === $handle ) {
-            return new WP_Error( 'file_error', __( 'Gagal membuka file.', 'wp-table-builder' ), [ 'status' => 500 ] );
+            return new WP_Error( 'file_error', __( 'Gagal membuka file.', 'wtb-table-builder' ), [ 'status' => 500 ] );
         }
 
         // Skip the UTF-8 BOM if present so the first header matches.
@@ -89,7 +89,7 @@ class WTB_CSV {
         $header = fgetcsv( $handle );
         if ( ! $header ) {
             fclose( $handle );
-            return new WP_Error( 'invalid_csv', __( 'CSV tidak memiliki header valid.', 'wp-table-builder' ), [ 'status' => 400 ] );
+            return new WP_Error( 'invalid_csv', __( 'CSV tidak memiliki header valid.', 'wtb-table-builder' ), [ 'status' => 400 ] );
         }
 
         // Map CSV column index => table column (id + data type).

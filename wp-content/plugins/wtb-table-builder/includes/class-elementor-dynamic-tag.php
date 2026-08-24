@@ -8,7 +8,7 @@ class WTB_Elementor_Dynamic_Tag extends \Elementor\Core\DynamicTags\Tag {
     }
 
     public function get_title() {
-        return esc_html__( 'WP Table Builder', 'wp-table-builder' );
+        return esc_html__( 'WP Table Builder', 'wtb-table-builder' );
     }
 
     public function get_group() {
@@ -28,7 +28,7 @@ class WTB_Elementor_Dynamic_Tag extends \Elementor\Core\DynamicTags\Tag {
         ]);
 
         $options = [
-            '' => esc_html__( '-- Pilih Tabel --', 'wp-table-builder' )
+            '' => esc_html__( '-- Pilih Tabel --', 'wtb-table-builder' )
         ];
 
         foreach ( $tables as $table ) {
@@ -38,7 +38,7 @@ class WTB_Elementor_Dynamic_Tag extends \Elementor\Core\DynamicTags\Tag {
         $this->add_control(
             'table_id',
             [
-                'label'   => esc_html__( 'Pilih Tabel', 'wp-table-builder' ),
+                'label'   => esc_html__( 'Pilih Tabel', 'wtb-table-builder' ),
                 'type'    => \Elementor\Controls_Manager::SELECT,
                 'options' => $options,
                 'default' => '',

@@ -14,14 +14,14 @@ add_action( 'elementor_pro/forms/actions/register', function ( $action_registrar
         }
 
         public function get_label() {
-            return esc_html__( 'WP Table Builder', 'wp-table-builder' );
+            return esc_html__( 'WP Table Builder', 'wtb-table-builder' );
         }
 
         public function register_settings_section( $widget ) {
             $widget->start_controls_section(
                 'section_wtb_table_action',
                 [
-                    'label' => esc_html__( 'WP Table Builder', 'wp-table-builder' ),
+                    'label' => esc_html__( 'WP Table Builder', 'wtb-table-builder' ),
                     'condition' => [
                         'submit_actions' => $this->get_name(),
                     ],
@@ -35,7 +35,7 @@ add_action( 'elementor_pro/forms/actions/register', function ( $action_registrar
             ]);
 
             $options = [
-                '' => esc_html__( '-- Pilih Tabel --', 'wp-table-builder' )
+                '' => esc_html__( '-- Pilih Tabel --', 'wtb-table-builder' )
             ];
 
             foreach ( $tables as $table ) {
@@ -45,11 +45,11 @@ add_action( 'elementor_pro/forms/actions/register', function ( $action_registrar
             $widget->add_control(
                 'wtb_target_table_id',
                 [
-                    'label'   => esc_html__( 'Target Table', 'wp-table-builder' ),
+                    'label'   => esc_html__( 'Target Table', 'wtb-table-builder' ),
                     'type'    => \Elementor\Controls_Manager::SELECT,
                     'options' => $options,
                     'default' => '',
-                    'description' => esc_html__( 'Pilih tabel untuk menyimpan data dari form ini.', 'wp-table-builder' ),
+                    'description' => esc_html__( 'Pilih tabel untuk menyimpan data dari form ini.', 'wtb-table-builder' ),
                 ]
             );
 
