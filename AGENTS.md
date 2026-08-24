@@ -19,7 +19,7 @@ DataTables.js for search/sort/filter/pagination.
 - Local dev via Docker Compose (`docker-compose.yml`): WordPress + MariaDB +
   phpMyAdmin. WordPress on http://localhost:8080, phpMyAdmin on :8081.
 - Plugin folder is bind-mounted from host into the container at
-  `wp-content/plugins/wp-table-builder/`.
+  `wp-content/plugins/wtb-table-builder/`.
 - **Known permission gotcha**: container runs as `www-data` (UID 33), host
   files are owned by the host user (UID 1000). WordPress core update/install
   routines need write access to `wp-content/plugins/` (the parent dir, not
@@ -27,7 +27,7 @@ DataTables.js for search/sort/filter/pagination.
   "directory already exists and could not be removed" — the latter can
   **silently wipe the plugin directory's contents** if only the inner dir is
   writable but not the parent. Always ensure both
-  `wp-content/plugins/` and `wp-content/plugins/wp-table-builder/` are
+  `wp-content/plugins/` and `wp-content/plugins/wtb-table-builder/` are
   writable (`chmod a+w`) before testing install/update flows.
 - PHP CLI is not available in this environment (`php -l` will fail) — verify
   syntax by careful reading, not by shelling out to php.
@@ -35,7 +35,7 @@ DataTables.js for search/sort/filter/pagination.
 ## File structure (target)
 ```
 wp-table-builder/
-├── wp-table-builder.php        # bootstrap, requirement checks, hooks
+├── wtb-table-builder.php      # bootstrap, requirement checks, hooks
 ├── uninstall.php                # DB cleanup on uninstall
 ├── readme.txt
 ├── includes/
@@ -80,12 +80,12 @@ wp-table-builder/
 - Public-facing endpoints (e.g. anonymous form submission) need rate
   limiting (transient-based per-IP throttle is the established pattern).
 - No test/debug scripts (`test-*.php`) should live outside
-  `wp-content/plugins/wp-table-builder/` — anything in the repo root is
+  `wp-content/plugins/wtb-table-builder/` — anything in the repo root is
   servable if the repo root is ever deployed as webroot.
 
 ## Packaging gotcha
 `package.py` must NOT exclude `vendor/` — `vendor/plugin-update-checker/` is
-a hard runtime dependency (`require`d directly in wp-table-builder.php).
+a hard runtime dependency (`require`d directly in wtb-table-builder.php).
 Only exclude `.git`, `node_modules`, test files. Always verify the built zip
 file count includes the full vendor tree before distributing.
 
@@ -96,8 +96,8 @@ file count includes the full vendor tree before distributing.
 ## Version bumps
 Every release needs the version updated in TWO places (package.py auto-detects
 the header, so the zip filename follows automatically):
-1. `Version:` in the plugin header comment (wp-table-builder.php)
-2. `WTB_VERSION` constant (wp-table-builder.php)
+1. `Version:` in the plugin header comment (wtb-table-builder.php)
+2. `WTB_VERSION` constant (wtb-table-builder.php)
 
 ## Git workflow
 User had two incidents of losing uncommitted work (once to a bad `mv`, once

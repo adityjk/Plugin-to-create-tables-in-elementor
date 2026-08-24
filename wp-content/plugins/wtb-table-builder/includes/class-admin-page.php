@@ -15,8 +15,8 @@ class WTB_Admin_Page {
 
     public static function register_menu() {
         add_menu_page(
-            __( 'Table Builder', 'wp-table-builder' ),
-            __( 'Table Builder', 'wp-table-builder' ),
+            __( 'Table Builder', 'wtb-table-builder' ),
+            __( 'Table Builder', 'wtb-table-builder' ),
             'manage_options',
             'wtb-tables',
             [ __CLASS__, 'render_tables_page' ],
@@ -26,8 +26,8 @@ class WTB_Admin_Page {
 
         add_submenu_page(
             'wtb-tables',
-            __( 'Semua Tabel', 'wp-table-builder' ),
-            __( 'Semua Tabel', 'wp-table-builder' ),
+            __( 'Semua Tabel', 'wtb-table-builder' ),
+            __( 'Semua Tabel', 'wtb-table-builder' ),
             'manage_options',
             'wtb-tables',
             [ __CLASS__, 'render_tables_page' ]
@@ -35,8 +35,8 @@ class WTB_Admin_Page {
 
         add_submenu_page(
             'wtb-tables',
-            __( 'Buat Tabel Baru', 'wp-table-builder' ),
-            __( '+ Buat Tabel Baru', 'wp-table-builder' ),
+            __( 'Buat Tabel Baru', 'wtb-table-builder' ),
+            __( '+ Buat Tabel Baru', 'wtb-table-builder' ),
             'manage_options',
             'wtb-new-table',
             [ __CLASS__, 'render_new_table_page' ]
@@ -44,8 +44,8 @@ class WTB_Admin_Page {
 
         add_submenu_page(
             'wtb-tables',
-            __( 'Form Submission Log', 'wp-table-builder' ),
-            __( '🪵 Form Log', 'wp-table-builder' ),
+            __( 'Form Submission Log', 'wtb-table-builder' ),
+            __( '🪵 Form Log', 'wtb-table-builder' ),
             'manage_options',
             'wtb-form-log',
             [ __CLASS__, 'render_form_log_page' ]
@@ -76,13 +76,13 @@ class WTB_Admin_Page {
                 'nonce'   => wp_create_nonce( 'wp_rest' ),
                 'tableId' => $table_id,
                 'strings' => [
-                    'save_success'   => __( 'Tabel berhasil disimpan!', 'wp-table-builder' ),
-                    'save_error'     => __( 'Gagal menyimpan tabel.', 'wp-table-builder' ),
-                    'saving'         => __( 'Menyimpan...', 'wp-table-builder' ),
-                    'save_btn_label' => __( 'Simpan Tabel', 'wp-table-builder' ),
-                    'confirm_delete' => __( 'Hapus baris ini?', 'wp-table-builder' ),
-                    'new_col_label'  => __( 'Kolom Baru', 'wp-table-builder' ),
-                    'loading'        => __( 'Memuat data tabel...', 'wp-table-builder' ),
+                    'save_success'   => __( 'Tabel berhasil disimpan!', 'wtb-table-builder' ),
+                    'save_error'     => __( 'Gagal menyimpan tabel.', 'wtb-table-builder' ),
+                    'saving'         => __( 'Menyimpan...', 'wtb-table-builder' ),
+                    'save_btn_label' => __( 'Simpan Tabel', 'wtb-table-builder' ),
+                    'confirm_delete' => __( 'Hapus baris ini?', 'wtb-table-builder' ),
+                    'new_col_label'  => __( 'Kolom Baru', 'wtb-table-builder' ),
+                    'loading'        => __( 'Memuat data tabel...', 'wtb-table-builder' ),
                 ],
             ] );
         }
@@ -122,7 +122,7 @@ class WTB_Admin_Page {
 
     public static function render_form_log_page() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Akses ditolak.', 'wtb-table-builder' ) );
         }
 
         $debug_on = WTB_Debug_Logger::is_enabled();
@@ -222,7 +222,7 @@ class WTB_Admin_Page {
 
     public static function render_tables_page() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Akses ditolak.', 'wtb-table-builder' ) );
         }
 
         $action   = sanitize_text_field( $_GET['action']   ?? '' );
@@ -255,11 +255,11 @@ class WTB_Admin_Page {
             <div class="wtb-admin-header">
                 <h1>
                     <span class="dashicons dashicons-editor-table" aria-hidden="true"></span>
-                    <?php esc_html_e( 'Table Builder', 'wp-table-builder' ); ?>
+                    <?php esc_html_e( 'Table Builder', 'wtb-table-builder' ); ?>
                 </h1>
                 <a href="<?php echo esc_url( admin_url( 'admin.php?page=wtb-new-table' ) ); ?>" class="wtb-btn-primary">
                     <span class="dashicons dashicons-plus-alt2" style="font-size:16px; width:16px; height:16px;" aria-hidden="true"></span>
-                    <?php esc_html_e( 'Buat Tabel Baru', 'wp-table-builder' ); ?>
+                    <?php esc_html_e( 'Buat Tabel Baru', 'wtb-table-builder' ); ?>
                 </a>
             </div>
 
@@ -277,7 +277,7 @@ class WTB_Admin_Page {
                         </div>
                         <div class="wtb-stat-info">
                             <span class="wtb-stat-value"><?php echo esc_html( $total_tables ); ?></span>
-                            <span class="wtb-stat-label"><?php esc_html_e( 'Total Tabel Dibuat', 'wp-table-builder' ); ?></span>
+                            <span class="wtb-stat-label"><?php esc_html_e( 'Total Tabel Dibuat', 'wtb-table-builder' ); ?></span>
                         </div>
                     </div>
                     <div class="wtb-stat-card">
@@ -286,7 +286,7 @@ class WTB_Admin_Page {
                         </div>
                         <div class="wtb-stat-info">
                             <span class="wtb-stat-value"><?php echo esc_html( $total_rows ); ?></span>
-                            <span class="wtb-stat-label"><?php esc_html_e( 'Total Baris Data', 'wp-table-builder' ); ?></span>
+                            <span class="wtb-stat-label"><?php esc_html_e( 'Total Baris Data', 'wtb-table-builder' ); ?></span>
                         </div>
                     </div>
                     <div class="wtb-stat-card">
@@ -294,8 +294,8 @@ class WTB_Admin_Page {
                             <span class="dashicons dashicons-shortcode"></span>
                         </div>
                         <div class="wtb-stat-info">
-                            <span class="wtb-stat-value"><?php esc_html_e( 'Shortcode & Elementor', 'wp-table-builder' ); ?></span>
-                            <span class="wtb-stat-label"><?php esc_html_e( 'Siap ditempel di halaman web', 'wp-table-builder' ); ?></span>
+                            <span class="wtb-stat-value"><?php esc_html_e( 'Shortcode & Elementor', 'wtb-table-builder' ); ?></span>
+                            <span class="wtb-stat-label"><?php esc_html_e( 'Siap ditempel di halaman web', 'wtb-table-builder' ); ?></span>
                         </div>
                     </div>
                 </div>
@@ -304,11 +304,11 @@ class WTB_Admin_Page {
                     <table class="wtb-table-list">
                         <thead>
                             <tr>
-                                <th scope="col"><?php esc_html_e( 'Nama Tabel', 'wp-table-builder' ); ?></th>
-                                <th scope="col" style="width:110px;"><?php esc_html_e( 'Kolom', 'wp-table-builder' ); ?></th>
-                                <th scope="col" style="width:110px;"><?php esc_html_e( 'Baris', 'wp-table-builder' ); ?></th>
-                                <th scope="col"><?php esc_html_e( 'Shortcode', 'wp-table-builder' ); ?></th>
-                                <th scope="col" style="width:230px; text-align:right;"><?php esc_html_e( 'Aksi', 'wp-table-builder' ); ?></th>
+                                <th scope="col"><?php esc_html_e( 'Nama Tabel', 'wtb-table-builder' ); ?></th>
+                                <th scope="col" style="width:110px;"><?php esc_html_e( 'Kolom', 'wtb-table-builder' ); ?></th>
+                                <th scope="col" style="width:110px;"><?php esc_html_e( 'Baris', 'wtb-table-builder' ); ?></th>
+                                <th scope="col"><?php esc_html_e( 'Shortcode', 'wtb-table-builder' ); ?></th>
+                                <th scope="col" style="width:230px; text-align:right;"><?php esc_html_e( 'Aksi', 'wtb-table-builder' ); ?></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -323,11 +323,11 @@ class WTB_Admin_Page {
                     <div class="wtb-empty-icon-wrap">
                         <span class="dashicons dashicons-editor-table" aria-hidden="true"></span>
                     </div>
-                    <h3><?php esc_html_e( 'Belum Ada Tabel Dibuat', 'wp-table-builder' ); ?></h3>
-                    <p><?php esc_html_e( 'Buat tabel pertama Anda untuk menampilkan data yang rapi dan interaktif di Elementor atau WordPress editor.', 'wp-table-builder' ); ?></p>
+                    <h3><?php esc_html_e( 'Belum Ada Tabel Dibuat', 'wtb-table-builder' ); ?></h3>
+                    <p><?php esc_html_e( 'Buat tabel pertama Anda untuk menampilkan data yang rapi dan interaktif di Elementor atau WordPress editor.', 'wtb-table-builder' ); ?></p>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=wtb-new-table' ) ); ?>" class="wtb-btn-primary">
                         <span class="dashicons dashicons-plus-alt2" style="font-size:16px; width:16px; height:16px;" aria-hidden="true"></span>
-                        <?php esc_html_e( 'Buat Tabel Pertama', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Buat Tabel Pertama', 'wtb-table-builder' ); ?>
                     </a>
                 </div>
             <?php endif; ?>
@@ -363,8 +363,8 @@ class WTB_Admin_Page {
             <td>
                 <span class="wtb-shortcode-badge">
                     <code><?php echo esc_html( $shortcode ); ?></code>
-                    <button type="button" class="wtb-btn-copy-mini wtb-btn-copy-shortcode" data-shortcode="<?php echo esc_attr( $shortcode ); ?>" title="<?php esc_attr_e( 'Salin Shortcode', 'wp-table-builder' ); ?>">
-                        <?php esc_html_e( 'Salin', 'wp-table-builder' ); ?>
+                    <button type="button" class="wtb-btn-copy-mini wtb-btn-copy-shortcode" data-shortcode="<?php echo esc_attr( $shortcode ); ?>" title="<?php esc_attr_e( 'Salin Shortcode', 'wtb-table-builder' ); ?>">
+                        <?php esc_html_e( 'Salin', 'wtb-table-builder' ); ?>
                     </button>
                 </span>
             </td>
@@ -372,15 +372,15 @@ class WTB_Admin_Page {
                 <div class="wtb-action-buttons" style="justify-content: flex-end;">
                     <a href="<?php echo esc_url( $edit_url ); ?>" class="wtb-btn-action">
                         <span class="dashicons dashicons-edit" style="font-size:14px; width:14px; height:14px;"></span>
-                        <?php esc_html_e( 'Edit', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Edit', 'wtb-table-builder' ); ?>
                     </a>
-                    <a href="<?php echo esc_url( $duplicate_url ); ?>" class="wtb-btn-action" title="<?php esc_attr_e( 'Duplikat tabel', 'wp-table-builder' ); ?>">
+                    <a href="<?php echo esc_url( $duplicate_url ); ?>" class="wtb-btn-action" title="<?php esc_attr_e( 'Duplikat tabel', 'wtb-table-builder' ); ?>">
                         <span class="dashicons dashicons-admin-page" style="font-size:14px; width:14px; height:14px;"></span>
-                        <?php esc_html_e( 'Duplikat', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Duplikat', 'wtb-table-builder' ); ?>
                     </a>
-                    <a href="<?php echo esc_url( $delete_url ); ?>" class="wtb-btn-action wtb-btn-delete" onclick="return confirm('<?php esc_attr_e( 'Yakin ingin menghapus tabel ini?', 'wp-table-builder' ); ?>')">
+                    <a href="<?php echo esc_url( $delete_url ); ?>" class="wtb-btn-action wtb-btn-delete" onclick="return confirm('<?php esc_attr_e( 'Yakin ingin menghapus tabel ini?', 'wtb-table-builder' ); ?>')">
                         <span class="dashicons dashicons-trash" style="font-size:14px; width:14px; height:14px;"></span>
-                        <?php esc_html_e( 'Hapus', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Hapus', 'wtb-table-builder' ); ?>
                     </a>
                 </div>
             </td>
@@ -392,7 +392,7 @@ class WTB_Admin_Page {
         $post = get_post( $table_id );
 
         if ( ! $post || $post->post_type !== 'wtb_table' ) {
-            wp_die( esc_html__( 'Tabel tidak ditemukan.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Tabel tidak ditemukan.', 'wtb-table-builder' ) );
         }
 
         $list_url = admin_url( 'admin.php?page=wtb-tables' );
@@ -401,41 +401,41 @@ class WTB_Admin_Page {
 
             <div class="wtb-save-bar">
                 <div class="wtb-save-bar__left">
-                    <a href="<?php echo esc_url( $list_url ); ?>" class="wtb-back-link" title="<?php esc_attr_e( 'Kembali ke daftar tabel', 'wp-table-builder' ); ?>">
-                        ← <?php esc_html_e( 'Semua Tabel', 'wp-table-builder' ); ?>
+                    <a href="<?php echo esc_url( $list_url ); ?>" class="wtb-back-link" title="<?php esc_attr_e( 'Kembali ke daftar tabel', 'wtb-table-builder' ); ?>">
+                        ← <?php esc_html_e( 'Semua Tabel', 'wtb-table-builder' ); ?>
                     </a>
                     <input type="text"
                            id="wtb-input-title"
                            class="wtb-title-input"
                            value="<?php echo esc_attr( $post->post_title ); ?>"
-                           placeholder="<?php esc_attr_e( 'Nama Tabel', 'wp-table-builder' ); ?>">
+                           placeholder="<?php esc_attr_e( 'Nama Tabel', 'wtb-table-builder' ); ?>">
                 </div>
                 <div style="display:flex; gap:8px;">
-                    <button id="wtb-btn-export-csv" type="button" class="wtb-btn-action" style="background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 12px; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:6px; cursor:pointer;" title="<?php esc_attr_e( 'Export Data ke CSV', 'wp-table-builder' ); ?>">
+                    <button id="wtb-btn-export-csv" type="button" class="wtb-btn-action" style="background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 12px; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:6px; cursor:pointer;" title="<?php esc_attr_e( 'Export Data ke CSV', 'wtb-table-builder' ); ?>">
                         <span class="dashicons dashicons-download" style="font-size:16px; width:16px; height:16px; margin:0;" aria-hidden="true"></span>
-                        <?php esc_html_e( 'Export CSV', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Export CSV', 'wtb-table-builder' ); ?>
                     </button>
-                    <button id="wtb-btn-import-csv" type="button" class="wtb-btn-action" style="background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 12px; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:6px; cursor:pointer;" title="<?php esc_attr_e( 'Import Data dari CSV (Tabel Manual saja)', 'wp-table-builder' ); ?>">
+                    <button id="wtb-btn-import-csv" type="button" class="wtb-btn-action" style="background:#fff; border:1px solid #cbd5e1; color:#334155; padding:6px 12px; border-radius:6px; font-weight:500; display:flex; align-items:center; gap:6px; cursor:pointer;" title="<?php esc_attr_e( 'Import Data dari CSV (Tabel Manual saja)', 'wtb-table-builder' ); ?>">
                         <span class="dashicons dashicons-upload" style="font-size:16px; width:16px; height:16px; margin:0;" aria-hidden="true"></span>
-                        <?php esc_html_e( 'Import CSV', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Import CSV', 'wtb-table-builder' ); ?>
                     </button>
                     <input type="file" id="wtb-csv-upload" accept=".csv" style="display:none;" />
                     <button id="wtb-btn-save" type="button" class="wtb-btn-primary wtb-btn-save">
                         <span class="dashicons dashicons-saved" style="font-size:16px; width:16px; height:16px;" aria-hidden="true"></span>
-                        <?php esc_html_e( 'Simpan Tabel', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Simpan Tabel', 'wtb-table-builder' ); ?>
                     </button>
                 </div>
             </div>
 
             <div id="wtb-save-notice" class="wtb-save-notice notice" style="display:none;" role="alert"></div>
 
-            <div id="wtb-onboarding-tips" class="wtb-onboarding-tips" role="region" aria-label="<?php esc_attr_e( 'Panduan cara pakai editor', 'wp-table-builder' ); ?>">
+            <div id="wtb-onboarding-tips" class="wtb-onboarding-tips" role="region" aria-label="<?php esc_attr_e( 'Panduan cara pakai editor', 'wtb-table-builder' ); ?>">
                 <div class="wtb-tips-header">
                     <div class="wtb-tips-header-title">
                         <span class="dashicons dashicons-lightbulb" aria-hidden="true"></span>
-                        <span><?php esc_html_e( 'Cara Pakai Editor Tabel', 'wp-table-builder' ); ?></span>
+                        <span><?php esc_html_e( 'Cara Pakai Editor Tabel', 'wtb-table-builder' ); ?></span>
                     </div>
-                    <button type="button" class="wtb-tips-dismiss" id="wtb-btn-dismiss-tips" title="<?php esc_attr_e( 'Tutup panduan ini', 'wp-table-builder' ); ?>">
+                    <button type="button" class="wtb-tips-dismiss" id="wtb-btn-dismiss-tips" title="<?php esc_attr_e( 'Tutup panduan ini', 'wtb-table-builder' ); ?>">
                         ✕
                     </button>
                 </div>
@@ -443,29 +443,29 @@ class WTB_Admin_Page {
                     <li class="wtb-tips-step">
                         <span class="wtb-step-num" aria-hidden="true">1</span>
                         <div class="wtb-step-body">
-                            <strong><?php esc_html_e( 'Tambah Kolom', 'wp-table-builder' ); ?></strong>
-                            <span><?php esc_html_e( 'Klik tombol "+ Kolom" di ujung header tabel.', 'wp-table-builder' ); ?></span>
+                            <strong><?php esc_html_e( 'Tambah Kolom', 'wtb-table-builder' ); ?></strong>
+                            <span><?php esc_html_e( 'Klik tombol "+ Kolom" di ujung header tabel.', 'wtb-table-builder' ); ?></span>
                         </div>
                     </li>
                     <li class="wtb-tips-step">
                         <span class="wtb-step-num" aria-hidden="true">2</span>
                         <div class="wtb-step-body">
-                            <strong><?php esc_html_e( 'Atur Tipe Data', 'wp-table-builder' ); ?></strong>
-                            <span><?php esc_html_e( 'Ketik nama & pilih tipe data (Teks, Angka, Link, Rating, dll).', 'wp-table-builder' ); ?></span>
+                            <strong><?php esc_html_e( 'Atur Tipe Data', 'wtb-table-builder' ); ?></strong>
+                            <span><?php esc_html_e( 'Ketik nama & pilih tipe data (Teks, Angka, Link, Rating, dll).', 'wtb-table-builder' ); ?></span>
                         </div>
                     </li>
                     <li class="wtb-tips-step">
                         <span class="wtb-step-num" aria-hidden="true">3</span>
                         <div class="wtb-step-body">
-                            <strong><?php esc_html_e( 'Isi Baris Data', 'wp-table-builder' ); ?></strong>
-                            <span><?php esc_html_e( 'Klik "+ Tambah Baris" lalu isi nilai di setiap cell.', 'wp-table-builder' ); ?></span>
+                            <strong><?php esc_html_e( 'Isi Baris Data', 'wtb-table-builder' ); ?></strong>
+                            <span><?php esc_html_e( 'Klik "+ Tambah Baris" lalu isi nilai di setiap cell.', 'wtb-table-builder' ); ?></span>
                         </div>
                     </li>
                     <li class="wtb-tips-step">
                         <span class="wtb-step-num" aria-hidden="true">4</span>
                         <div class="wtb-step-body">
-                            <strong><?php esc_html_e( 'Simpan & Tempel', 'wp-table-builder' ); ?></strong>
-                            <span><?php esc_html_e( 'Klik "Simpan Tabel" lalu gunakan Shortcode atau Elementor.', 'wp-table-builder' ); ?></span>
+                            <strong><?php esc_html_e( 'Simpan & Tempel', 'wtb-table-builder' ); ?></strong>
+                            <span><?php esc_html_e( 'Klik "Simpan Tabel" lalu gunakan Shortcode atau Elementor.', 'wtb-table-builder' ); ?></span>
                         </div>
                     </li>
                 </ol>
@@ -491,21 +491,21 @@ class WTB_Admin_Page {
 
             <div id="wtb-editor-loader" class="wtb-loader">
                 <span class="spinner is-active" style="float:none; margin:0;"></span>
-                <span><?php esc_html_e( 'Memuat data tabel...', 'wp-table-builder' ); ?></span>
+                <span><?php esc_html_e( 'Memuat data tabel...', 'wtb-table-builder' ); ?></span>
             </div>
 
             <div class="wtb-editor-layout" id="wtb-editor-main" style="display:none;">
 
                 <div class="wtb-editor-panel">
                     <div class="wtb-editor-panel__header">
-                        <h2><?php esc_html_e( 'Editor Kolom & Baris', 'wp-table-builder' ); ?></h2>
+                        <h2><?php esc_html_e( 'Editor Kolom & Baris', 'wtb-table-builder' ); ?></h2>
                         <p class="description">
-                            <?php esc_html_e( 'Klik nama kolom untuk edit header. Klik cell untuk mengisi data.', 'wp-table-builder' ); ?>
+                            <?php esc_html_e( 'Klik nama kolom untuk edit header. Klik cell untuk mengisi data.', 'wtb-table-builder' ); ?>
                         </p>
                     </div>
 
                     <div id="wtb-editor-table-wrapper">
-                        <table id="wtb-editor-table" aria-label="<?php esc_attr_e( 'Editor tabel', 'wp-table-builder' ); ?>">
+                        <table id="wtb-editor-table" aria-label="<?php esc_attr_e( 'Editor tabel', 'wtb-table-builder' ); ?>">
                             <thead>
                                 <tr id="wtb-column-headers">
                                 </tr>
@@ -517,7 +517,7 @@ class WTB_Admin_Page {
 
                     <div class="wtb-add-row-area">
                         <button id="wtb-btn-add-row" type="button" class="wtb-btn-add-row">
-                            + <?php esc_html_e( 'Tambah Baris Baru', 'wp-table-builder' ); ?>
+                            + <?php esc_html_e( 'Tambah Baris Baru', 'wtb-table-builder' ); ?>
                         </button>
                     </div>
                 </div>
@@ -525,22 +525,22 @@ class WTB_Admin_Page {
                 <aside class="wtb-settings-panel">
                     <h2>
                         <span class="dashicons dashicons-admin-settings" style="color:var(--wtb-primary);"></span>
-                        <?php esc_html_e( 'Pengaturan Tabel', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Pengaturan Tabel', 'wtb-table-builder' ); ?>
                     </h2>
                     <p class="description" style="margin-bottom:16px; font-size:0.85em; color:#64748b;">
-                        <?php esc_html_e( 'Pengaturan tampilan (warna, border, shadow, dll) tersedia di panel Elementor saat menambah widget ke halaman.', 'wp-table-builder' ); ?>
+                        <?php esc_html_e( 'Pengaturan tampilan (warna, border, shadow, dll) tersedia di panel Elementor saat menambah widget ke halaman.', 'wtb-table-builder' ); ?>
                     </p>
 
                         <div class="wtb-settings-group">
-                            <label for="wtb_data_source"><strong><?php esc_html_e( 'Sumber Data (Data Source)', 'wp-table-builder' ); ?></strong></label>
+                            <label for="wtb_data_source"><strong><?php esc_html_e( 'Sumber Data (Data Source)', 'wtb-table-builder' ); ?></strong></label>
                             <select id="wtb_data_source" data-setting-key="data_source" style="margin-top: 4px; width: 100%;">
-                                <option value="manual"><?php esc_html_e( 'Manual (Input Baris / Elementor Form)', 'wp-table-builder' ); ?></option>
-                                <option value="wp_posts"><?php esc_html_e( 'WordPress Posts (Dynamic)', 'wp-table-builder' ); ?></option>
+                                <option value="manual"><?php esc_html_e( 'Manual (Input Baris / Elementor Form)', 'wtb-table-builder' ); ?></option>
+                                <option value="wp_posts"><?php esc_html_e( 'WordPress Posts (Dynamic)', 'wtb-table-builder' ); ?></option>
                             </select>
                         </div>
 
                         <div class="wtb-settings-group wtb-wp-posts-setting" style="display:none; padding-left:12px; border-left:3px solid #4f46e5;">
-                            <label for="wtb_post_type"><?php esc_html_e( 'Tipe Post', 'wp-table-builder' ); ?></label>
+                            <label for="wtb_post_type"><?php esc_html_e( 'Tipe Post', 'wtb-table-builder' ); ?></label>
                             <select id="wtb_post_type" data-setting-key="post_type" style="margin-top: 4px; margin-bottom: 12px; width: 100%;">
                                 <?php
                                 $post_types = get_post_types( [ 'public' => true ], 'objects' );
@@ -551,7 +551,7 @@ class WTB_Admin_Page {
                                 ?>
                             </select>
                             
-                            <label for="wtb_posts_limit"><?php esc_html_e( 'Batas Tampil (Limit)', 'wp-table-builder' ); ?></label>
+                            <label for="wtb_posts_limit"><?php esc_html_e( 'Batas Tampil (Limit)', 'wtb-table-builder' ); ?></label>
                             <input type="number" id="wtb_posts_limit" data-setting-key="posts_limit" value="10" min="-1" style="margin-top: 4px; width: 100%;">
                             <span class="description" style="display:block; margin-top:4px;">Gunakan -1 untuk menampilkan semua.</span>
                         </div>
@@ -560,35 +560,35 @@ class WTB_Admin_Page {
                         <div class="wtb-settings-group">
                             <label>
                                 <input type="checkbox" id="wtb_enable_search" data-setting-key="enable_search" value="1" checked>
-                                <?php esc_html_e( 'Tampilkan search box', 'wp-table-builder' ); ?>
+                                <?php esc_html_e( 'Tampilkan search box', 'wtb-table-builder' ); ?>
                             </label>
                         </div>
 
                         <div class="wtb-settings-group">
                             <label>
                                 <input type="checkbox" id="wtb_enable_sort" data-setting-key="enable_sort" value="1" checked>
-                                <?php esc_html_e( 'Aktifkan sort kolom', 'wp-table-builder' ); ?>
+                                <?php esc_html_e( 'Aktifkan sort kolom', 'wtb-table-builder' ); ?>
                             </label>
                         </div>
 
                         <div class="wtb-settings-group">
                             <label>
                                 <input type="checkbox" id="wtb_show_file_preview" data-setting-key="show_file_preview" value="1" checked>
-                                <?php esc_html_e( 'Tampilkan preview file (modal popup)', 'wp-table-builder' ); ?>
+                                <?php esc_html_e( 'Tampilkan preview file (modal popup)', 'wtb-table-builder' ); ?>
                             </label>
                         </div>
 
                         <div class="wtb-settings-group">
-                            <label for="wtb_responsive_mode"><?php esc_html_e( 'Mode Responsif Mobile', 'wp-table-builder' ); ?></label>
+                            <label for="wtb_responsive_mode"><?php esc_html_e( 'Mode Responsif Mobile', 'wtb-table-builder' ); ?></label>
                             <select id="wtb_responsive_mode" data-setting-key="responsive_mode">
-                                <option value="scroll"><?php esc_html_e( 'Horizontal Scroll', 'wp-table-builder' ); ?></option>
-                                <option value="collapse"><?php esc_html_e( 'Collapsible Rows', 'wp-table-builder' ); ?></option>
+                                <option value="scroll"><?php esc_html_e( 'Horizontal Scroll', 'wtb-table-builder' ); ?></option>
+                                <option value="collapse"><?php esc_html_e( 'Collapsible Rows', 'wtb-table-builder' ); ?></option>
                             </select>
                         </div>
 
                         <div class="wtb-settings-group">
                             <label for="wtb_server_side_threshold">
-                                <?php esc_html_e( 'Threshold Server-Side (baris)', 'wp-table-builder' ); ?>
+                                <?php esc_html_e( 'Threshold Server-Side (baris)', 'wtb-table-builder' ); ?>
                             </label>
                             <input type="number" id="wtb_server_side_threshold" data-setting-key="server_side_threshold" value="200" min="10" max="10000">
                         </div>
@@ -596,12 +596,12 @@ class WTB_Admin_Page {
                     </form>
 
                     <div class="wtb-shortcode-info">
-                        <p><?php esc_html_e( 'Shortcode Tabel:', 'wp-table-builder' ); ?></p>
+                        <p><?php esc_html_e( 'Shortcode Tabel:', 'wtb-table-builder' ); ?></p>
                         <code>[wtb_table id="<?php echo esc_html( $table_id ); ?>"]</code>
                         <button type="button" class="wtb-btn-primary wtb-btn-copy-shortcode"
                                 data-shortcode='[wtb_table id="<?php echo esc_attr( $table_id ); ?>"]'>
                             <span class="dashicons dashicons-admin-page" style="font-size:14px; width:14px; height:14px;"></span>
-                            <?php esc_html_e( 'Salin Shortcode', 'wp-table-builder' ); ?>
+                            <?php esc_html_e( 'Salin Shortcode', 'wtb-table-builder' ); ?>
                         </button>
                     </div>
                 </aside>
@@ -614,7 +614,7 @@ class WTB_Admin_Page {
 
     public static function render_new_table_page() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Akses ditolak.', 'wtb-table-builder' ) );
         }
 
         $notice = self::get_flash_notice();
@@ -631,8 +631,8 @@ class WTB_Admin_Page {
                     <div class="wtb-new-table-icon">
                         <span class="dashicons dashicons-table-import"></span>
                     </div>
-                    <h2><?php esc_html_e( 'Buat Tabel Baru', 'wp-table-builder' ); ?></h2>
-                    <p><?php esc_html_e( 'Berikan nama tabel untuk memulai membuat kolom dan baris data.', 'wp-table-builder' ); ?></p>
+                    <h2><?php esc_html_e( 'Buat Tabel Baru', 'wtb-table-builder' ); ?></h2>
+                    <p><?php esc_html_e( 'Berikan nama tabel untuk memulai membuat kolom dan baris data.', 'wtb-table-builder' ); ?></p>
                 </div>
 
                 <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
@@ -640,23 +640,23 @@ class WTB_Admin_Page {
                     <?php wp_nonce_field( 'wtb_create_table', 'wtb_nonce' ); ?>
 
                     <div class="wtb-form-group">
-                        <label for="wtb_new_table_title"><?php esc_html_e( 'Nama Tabel', 'wp-table-builder' ); ?> *</label>
+                        <label for="wtb_new_table_title"><?php esc_html_e( 'Nama Tabel', 'wtb-table-builder' ); ?> *</label>
                         <input type="text"
                                id="wtb_new_table_title"
                                name="wtb_title"
                                required
                                autofocus
                                maxlength="200"
-                               placeholder="<?php esc_attr_e( 'Contoh: Daftar Produk Unggulan', 'wp-table-builder' ); ?>">
+                               placeholder="<?php esc_attr_e( 'Contoh: Daftar Produk Unggulan', 'wtb-table-builder' ); ?>">
                     </div>
 
                     <div class="wtb-form-actions">
                         <button type="submit" class="wtb-btn-primary" style="flex:1; justify-content:center;">
                             <span class="dashicons dashicons-plus-alt2" style="font-size:16px; width:16px; height:16px;"></span>
-                            <?php esc_html_e( 'Buat Tabel & Mulai Edit', 'wp-table-builder' ); ?>
+                            <?php esc_html_e( 'Buat Tabel & Mulai Edit', 'wtb-table-builder' ); ?>
                         </button>
                         <a href="<?php echo esc_url( admin_url( 'admin.php?page=wtb-tables' ) ); ?>" class="wtb-btn-action" style="padding: 10px 18px;">
-                            <?php esc_html_e( 'Batal', 'wp-table-builder' ); ?>
+                            <?php esc_html_e( 'Batal', 'wtb-table-builder' ); ?>
                         </a>
                     </div>
                 </form>
@@ -667,7 +667,7 @@ class WTB_Admin_Page {
 
     public static function handle_create_table() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Akses ditolak.', 'wtb-table-builder' ) );
         }
 
         check_admin_referer( 'wtb_create_table', 'wtb_nonce' );
@@ -678,7 +678,7 @@ class WTB_Admin_Page {
             self::redirect_with_notice(
                 admin_url( 'admin.php?page=wtb-new-table' ),
                 'error',
-                __( 'Nama tabel tidak boleh kosong.', 'wp-table-builder' )
+                __( 'Nama tabel tidak boleh kosong.', 'wtb-table-builder' )
             );
             return;
         }
@@ -693,7 +693,7 @@ class WTB_Admin_Page {
             self::redirect_with_notice(
                 admin_url( 'admin.php?page=wtb-new-table' ),
                 'error',
-                __( 'Gagal membuat tabel. Coba lagi.', 'wp-table-builder' )
+                __( 'Gagal membuat tabel. Coba lagi.', 'wtb-table-builder' )
             );
             return;
         }
@@ -704,13 +704,13 @@ class WTB_Admin_Page {
         self::redirect_with_notice(
             admin_url( 'admin.php?page=wtb-tables&action=edit&table_id=' . $table_id ),
             'success',
-            __( 'Tabel berhasil dibuat! Sekarang kamu bisa menambah kolom dan baris.', 'wp-table-builder' )
+            __( 'Tabel berhasil dibuat! Sekarang kamu bisa menambah kolom dan baris.', 'wtb-table-builder' )
         );
     }
 
     public static function handle_delete_table() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Akses ditolak.', 'wtb-table-builder' ) );
         }
 
         $table_id = absint( $_GET['table_id'] ?? 0 );
@@ -726,13 +726,13 @@ class WTB_Admin_Page {
         self::redirect_with_notice(
             admin_url( 'admin.php?page=wtb-tables' ),
             'success',
-            __( 'Tabel berhasil dihapus.', 'wp-table-builder' )
+            __( 'Tabel berhasil dihapus.', 'wtb-table-builder' )
         );
     }
 
     public static function handle_duplicate_table() {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Akses ditolak.', 'wp-table-builder' ) );
+            wp_die( esc_html__( 'Akses ditolak.', 'wtb-table-builder' ) );
         }
 
         $table_id = absint( $_GET['table_id'] ?? 0 );
@@ -742,7 +742,7 @@ class WTB_Admin_Page {
             self::redirect_with_notice(
                 admin_url( 'admin.php?page=wtb-tables' ),
                 'error',
-                __( 'ID tabel tidak valid.', 'wp-table-builder' )
+                __( 'ID tabel tidak valid.', 'wtb-table-builder' )
             );
             return;
         }
@@ -756,7 +756,7 @@ class WTB_Admin_Page {
             self::redirect_with_notice(
                 admin_url( 'admin.php?page=wtb-tables' ),
                 'error',
-                __( 'Gagal menduplikat tabel.', 'wp-table-builder' )
+                __( 'Gagal menduplikat tabel.', 'wtb-table-builder' )
             );
             return;
         }
@@ -767,7 +767,7 @@ class WTB_Admin_Page {
         self::redirect_with_notice(
             admin_url( 'admin.php?page=wtb-tables&action=edit&table_id=' . $new_table_id ),
             'success',
-            __( 'Tabel berhasil diduplikat!', 'wp-table-builder' )
+            __( 'Tabel berhasil diduplikat!', 'wtb-table-builder' )
         );
     }
 

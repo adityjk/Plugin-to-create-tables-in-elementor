@@ -24,7 +24,7 @@ class WTB_Render {
 
         $columns = WTB_Table_Repository::get_columns( $table_id );
         if ( empty( $columns ) ) {
-            return '<p>' . esc_html__( 'Tabel tidak memiliki kolom.', 'wp-table-builder' ) . '</p>';
+            return '<p>' . esc_html__( 'Tabel tidak memiliki kolom.', 'wtb-table-builder' ) . '</p>';
         }
 
         $rows        = [];
@@ -131,8 +131,8 @@ class WTB_Render {
         if ( $filter_type === 'select' ) {
             echo '<div class="wtb-header-tax-wrap" onclick="event.stopPropagation();">';
             echo '<svg class="wtb-tax-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>';
-            echo '<select class="wtb-header-tax-select wtb-header-filter wtb-filter-select" data-filter-col-id="' . esc_attr( $col['id'] ) . '" title="' . esc_attr__( 'Filter', 'wp-table-builder' ) . '">';
-            echo '<option value="">' . esc_html__( 'Semua', 'wp-table-builder' ) . '</option>';
+            echo '<select class="wtb-header-tax-select wtb-header-filter wtb-filter-select" data-filter-col-id="' . esc_attr( $col['id'] ) . '" title="' . esc_attr__( 'Filter', 'wtb-table-builder' ) . '">';
+            echo '<option value="">' . esc_html__( 'Semua', 'wtb-table-builder' ) . '</option>';
 
             // Client-side only: options are derived from actual cell values,
             // split on commas so "a, b" style cells match individual terms.
@@ -156,7 +156,7 @@ class WTB_Render {
         } elseif ( $filter_type === 'text' ) {
             echo '<div class="wtb-header-tax-wrap wtb-header-text-filter-wrap" onclick="event.stopPropagation();">';
             echo '<svg class="wtb-tax-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
-            echo '<input type="text" class="wtb-header-filter wtb-filter-text" data-filter-col-id="' . esc_attr( $col['id'] ) . '" placeholder="' . esc_attr__( 'Cari...', 'wp-table-builder' ) . '">';
+            echo '<input type="text" class="wtb-header-filter wtb-filter-text" data-filter-col-id="' . esc_attr( $col['id'] ) . '" placeholder="' . esc_attr__( 'Cari...', 'wtb-table-builder' ) . '">';
             echo '</div>';
         }
 
@@ -253,8 +253,8 @@ class WTB_Render {
 
         echo '<div class="wtb-form-container" id="wtb-form-container-' . esc_attr( $table_id ) . '">';
         echo '<div class="wtb-form-header">';
-        echo '<h4 class="wtb-form-title">' . sprintf( esc_html__( 'Form Tambah Data — %s', 'wp-table-builder' ), esc_html( $post->post_title ) ) . '</h4>';
-        echo '<p class="wtb-form-subtitle">' . esc_html__( 'Isi formulir di bawah ini untuk menambahkan data baru ke dalam tabel.', 'wp-table-builder' ) . '</p>';
+        echo '<h4 class="wtb-form-title">' . sprintf( esc_html__( 'Form Tambah Data — %s', 'wtb-table-builder' ), esc_html( $post->post_title ) ) . '</h4>';
+        echo '<p class="wtb-form-subtitle">' . esc_html__( 'Isi formulir di bawah ini untuk menambahkan data baru ke dalam tabel.', 'wtb-table-builder' ) . '</p>';
         echo '</div>';
 
         echo '<form class="wtb-user-submit-form" data-table-id="' . esc_attr( $table_id ) . '" data-rest-url="' . esc_url_raw( rest_url( 'wtb/v1/tables/' . $table_id . '/submit' ) ) . '">';
@@ -293,7 +293,7 @@ class WTB_Render {
         echo '<div class="wtb-form-submit-btn-wrap">';
         echo '<button type="submit" class="wtb-form-btn-submit">';
         echo '<svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;vertical-align:middle;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>';
-        echo esc_html__( 'Kirim Data', 'wp-table-builder' );
+        echo esc_html__( 'Kirim Data', 'wtb-table-builder' );
         echo '</button></div>';
 
         echo '</form></div>';
@@ -337,7 +337,7 @@ class WTB_Render {
             case 'file':
                 $url      = esc_url( $value );
                 $path     = wp_parse_url( $url, PHP_URL_PATH );
-                $filename = $path ? basename( $path ) : __( 'Download File', 'wp-table-builder' );
+                $filename = $path ? basename( $path ) : __( 'Download File', 'wtb-table-builder' );
 
                 $html  = '<div class="wtb-cell-file-wrap">';
                 $html .= '<a href="' . $url . '" class="wtb-cell-file"' . ( $show_preview ? ' data-preview="1"' : '' ) . ' target="_blank" download rel="noopener noreferrer" title="' . esc_attr( $filename ) . '">';
@@ -345,7 +345,7 @@ class WTB_Render {
                 $html .= '<span>' . esc_html( $filename ) . '</span></a>';
 
                 if ( $show_preview ) {
-                    $html .= '<button type="button" class="wtb-btn-file-preview" data-file-url="' . $url . '" data-file-name="' . esc_attr( $filename ) . '" title="' . esc_attr__( 'Preview File', 'wp-table-builder' ) . '">';
+                    $html .= '<button type="button" class="wtb-btn-file-preview" data-file-url="' . $url . '" data-file-name="' . esc_attr( $filename ) . '" title="' . esc_attr__( 'Preview File', 'wtb-table-builder' ) . '">';
                     $html .= '<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
                     $html .= '</button>';
                 }

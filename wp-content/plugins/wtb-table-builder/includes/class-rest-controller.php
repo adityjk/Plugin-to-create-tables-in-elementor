@@ -107,7 +107,7 @@ class WTB_Rest_Controller {
      * Standard not-found guard shared by all single-table endpoints.
      */
     private static function not_found(): WP_Error {
-        return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wp-table-builder' ), [ 'status' => 404 ] );
+        return new WP_Error( 'not_found', __( 'Tabel tidak ditemukan.', 'wtb-table-builder' ), [ 'status' => 404 ] );
     }
 
     public static function list_tables(): WP_REST_Response {
@@ -129,7 +129,7 @@ class WTB_Rest_Controller {
         $title = WTB_Sanitizer::plain_text( $request->get_json_params()['title'] ?? '' );
 
         if ( $title === '' ) {
-            return new WP_Error( 'invalid_title', __( 'Nama tabel tidak boleh kosong.', 'wp-table-builder' ), [ 'status' => 400 ] );
+            return new WP_Error( 'invalid_title', __( 'Nama tabel tidak boleh kosong.', 'wtb-table-builder' ), [ 'status' => 400 ] );
         }
 
         $table_id = wp_insert_post( [
@@ -139,7 +139,7 @@ class WTB_Rest_Controller {
         ] );
 
         if ( is_wp_error( $table_id ) || ! $table_id ) {
-            return new WP_Error( 'create_failed', __( 'Gagal membuat tabel.', 'wp-table-builder' ), [ 'status' => 500 ] );
+            return new WP_Error( 'create_failed', __( 'Gagal membuat tabel.', 'wtb-table-builder' ), [ 'status' => 500 ] );
         }
 
         WTB_Table_Repository::save_settings( $table_id, WTB_Sanitizer::table_settings( [] ) );
@@ -176,7 +176,7 @@ class WTB_Rest_Controller {
         $title = WTB_Sanitizer::plain_text( $body['title'] ?? '' );
 
         if ( $title === '' ) {
-            return new WP_Error( 'invalid_title', __( 'Nama tabel tidak boleh kosong.', 'wp-table-builder' ), [ 'status' => 400 ] );
+            return new WP_Error( 'invalid_title', __( 'Nama tabel tidak boleh kosong.', 'wtb-table-builder' ), [ 'status' => 400 ] );
         }
 
         wp_update_post( [ 'ID' => $table_id, 'post_title' => $title ] );
@@ -369,7 +369,7 @@ class WTB_Rest_Controller {
 
         // Honeypot: any value means a bot filled the hidden field.
         if ( ! empty( $params['wtb_website_url'] ) ) {
-            return new WP_Error( 'spam_detected', __( 'Spam terdeteksi.', 'wp-table-builder' ), [ 'status' => 403 ] );
+            return new WP_Error( 'spam_detected', __( 'Spam terdeteksi.', 'wtb-table-builder' ), [ 'status' => 403 ] );
         }
 
         // Per-IP throttle: one submission per table every 30 seconds.
@@ -379,19 +379,19 @@ class WTB_Rest_Controller {
         if ( get_transient( $rate_key ) ) {
             return new WP_Error(
                 'rate_limited',
-                __( 'Terlalu banyak pengiriman. Silakan coba lagi nanti.', 'wp-table-builder' ),
+                __( 'Terlalu banyak pengiriman. Silakan coba lagi nanti.', 'wtb-table-builder' ),
                 [ 'status' => 429 ]
             );
         }
 
         $settings = WTB_Table_Repository::get_settings( $table_id );
         if ( empty( $settings['enable_form_submission'] ) ) {
-            return new WP_Error( 'form_disabled', __( 'Pengisian form untuk tabel ini tidak diaktifkan.', 'wp-table-builder' ), [ 'status' => 403 ] );
+            return new WP_Error( 'form_disabled', __( 'Pengisian form untuk tabel ini tidak diaktifkan.', 'wtb-table-builder' ), [ 'status' => 403 ] );
         }
 
         $columns = WTB_Table_Repository::get_columns( $table_id );
         if ( empty( $columns ) ) {
-            return new WP_Error( 'invalid_table', __( 'Tabel belum memiliki kolom.', 'wp-table-builder' ), [ 'status' => 400 ] );
+            return new WP_Error( 'invalid_table', __( 'Tabel belum memiliki kolom.', 'wtb-table-builder' ), [ 'status' => 400 ] );
         }
 
         $submitted = self::extract_submitted_cells( $params, $columns );
@@ -406,7 +406,7 @@ class WTB_Rest_Controller {
         $row_id = WTB_Table_Repository::insert_row( $table_id, $cells_clean, $status );
 
         if ( false === $row_id ) {
-            return new WP_Error( 'db_error', __( 'Gagal menyimpan data ke database.', 'wp-table-builder' ), [ 'status' => 500 ] );
+            return new WP_Error( 'db_error', __( 'Gagal menyimpan data ke database.', 'wtb-table-builder' ), [ 'status' => 500 ] );
         }
 
         set_transient( $rate_key, 1, 30 );
@@ -414,8 +414,8 @@ class WTB_Rest_Controller {
         return rest_ensure_response( [
             'success' => true,
             'message' => $status === 'pending'
-                ? __( 'Terima kasih! Data Anda telah terkirim dan menunggu persetujuan admin.', 'wp-table-builder' )
-                : __( 'Berhasil! Data Anda telah ditambahkan ke tabel.', 'wp-table-builder' ),
+                ? __( 'Terima kasih! Data Anda telah terkirim dan menunggu persetujuan admin.', 'wtb-table-builder' )
+                : __( 'Berhasil! Data Anda telah ditambahkan ke tabel.', 'wtb-table-builder' ),
             'status'  => $status,
         ] );
     }

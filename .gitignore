@@ -48,7 +48,7 @@ composer.lock
 wp-content/*
 !wp-content/plugins/
 wp-content/plugins/*
-!wp-content/plugins/wp-table-builder/
+!wp-content/plugins/wtb-table-builder/
 
 # WordPress debug & server logs
 wp-content/debug.log
