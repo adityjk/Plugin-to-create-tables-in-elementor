@@ -1,19 +1,28 @@
 import os
+import re
 import zipfile
 import shutil
 
 plugin_slug = "wp-table-builder"
-version = "1.1.0"
-zip_name = f"{plugin_slug}-{version}.zip"
 target_dir = "dist"
+source_dir = os.path.join("wp-content", "plugins", plugin_slug)
+
+with open(os.path.join(source_dir, f"{plugin_slug}.php"), encoding="utf-8") as f:
+    header = f.read()
+
+match = re.search(r"^ \* Version:\s+(.+)$", header, re.MULTILINE)
+if not match:
+    raise SystemExit(f"Tidak menemukan header 'Version:' di {source_dir}/{plugin_slug}.php")
+
+version = match.group(1).strip()
+print(f"Versi terdeteksi dari header plugin: {version}")
+zip_name = f"{plugin_slug}-{version}.zip"
 
 print(f"Membuat folder tujuan: {target_dir}")
 os.makedirs(target_dir, exist_ok=True)
 
 zip_path = os.path.join(target_dir, zip_name)
 print(f"Menyiapkan file ZIP: {zip_path}")
-
-source_dir = os.path.join("wp-content", "plugins", plugin_slug)
 
 def should_exclude(path):
     excludes = ['.git', 'node_modules', 'vendor', 'tests', 'phpunit.xml']

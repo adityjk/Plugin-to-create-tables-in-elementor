@@ -24,9 +24,11 @@ require_once WTB_PLUGIN_DIR . 'includes/class-sanitizer.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-post-type.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-rest-controller.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-admin-page.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-admin-page.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-shortcode.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-form-shortcode.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-debug-logger.php';
+require_once WTB_PLUGIN_DIR . 'includes/class-updater.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-integration.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-elementor-form-action.php';
 require_once WTB_PLUGIN_DIR . 'includes/class-elementor-dynamic-tag.php';
@@ -45,6 +47,7 @@ add_action( 'plugins_loaded', function () {
     WTB_Shortcode::init();
     WTB_Form_Shortcode::init();
     WTB_Elementor_Form_Integration::init();
+    WTB_Updater::init();
     WTB_Block::init();
 
     add_action( 'elementor/widgets/register', function( $widgets_manager ) {
