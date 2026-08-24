@@ -79,20 +79,8 @@ class WTB_Admin_Menu {
 			return;
 		}
 
-		wp_enqueue_style(
-			'wtb-admin',
-			plugins_url( 'assets/css/admin.css', WTB_PLUGIN_FILE ),
-			[],
-			WTB_VERSION
-		);
-
-		wp_enqueue_script(
-			'wtb-admin-builder',
-			plugins_url( 'assets/js/admin-builder.js', WTB_PLUGIN_FILE ),
-			[ 'jquery' ],
-			WTB_VERSION,
-			true
-		);
+		wp_enqueue_style( 'wtb-admin' );
+		wp_enqueue_script( 'wtb-admin-builder' );
 
 		// The media picker only exists in the builder grid.
 		if ( isset( $_GET['table'] ) && absint( $_GET['table'] ) ) {

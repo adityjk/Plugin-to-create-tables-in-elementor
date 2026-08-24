@@ -39,8 +39,8 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 7 | admin | `includes/class-admin-table-list.php` | 116 | done |
 | 7 | admin | `includes/class-admin-table-editor.php` | 156 | done |
 | 7 | admin | `includes/class-debug-log.php` | 98 | done |
-| 8 | bootstrap | `wp-table-builder.php` | — | next |
-| 8 | bootstrap | `uninstall.php` | — | pending |
+| 8 | bootstrap | `wp-table-builder.php` | 215 | done |
+| 8 | bootstrap | `uninstall.php` | — | next |
 | 8 | bootstrap | `readme.txt` | — | pending |
 | 9 | assets | `assets/css/admin.css`, `frontend.css` | — | pending |
 | 9 | assets | `assets/js/admin-builder.js`, `frontend.js`, `block-editor.js` | — | pending |
@@ -71,15 +71,14 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
   wrapper as data attrs; per-view config lives in data-config JSON;
   buttons carry data-wtb-action/data-id/data-confirm.
 
-## Open forward references (resolve by step 8/9)
-- `wtb-frontend` / `wtb-block-editor` script/style handles: enqueued by
-  embeds, registered later in bootstrap.
-- `WTB_Debug_Log::add()` called in `WTB_Rest_Submissions::submit()`
-  and `WTB_Elementor_Form_Action::run()`; forward reference resolved
-  (class-debug-log.php written).
-- Bootstrap must gate Elementor requires on `elementor/loaded`
-  (widget/tag/action/hook extend Elementor classes) and register the
-  asset handles above.
+## Open forward references (resolved)
+- `wtb-frontend` / `wtb-block-editor` handles: registered in the
+  bootstrap (`wtb-datatables` vendor pair + `wtb-admin` admin pair).
+  Admin menu now enqueues by handle only.
+- Elementor gating done: widget/tag require behind elementor/loaded
+  (either load order); form-hook loads unconditionally and self-guards.
+- Update checker wired to github.com/adityjk/Plugin-to-create-tables-
+  in-elementor, branch v2-development, behind file_exists + class_exists.
 
 ## Remaining work, in detail
 
