@@ -32,8 +32,8 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 5 | CSV | `includes/class-csv-export.php` | 131 | done |
 | 5 | CSV | `includes/class-csv-import.php` | 220 | done |
 | 6 | Elementor | `includes/class-elementor-widget.php` | 241 | done |
-| 6 | Elementor | `includes/class-elementor-dynamic-tag.php` | — | next |
-| 6 | Elementor | `includes/class-elementor-form-action.php` | — | pending |
+| 6 | Elementor | `includes/class-elementor-dynamic-tag.php` | 225 | done |
+| 6 | Elementor | `includes/class-elementor-form-action.php` | — | next |
 | 6 | Elementor | `includes/class-elementor-form-hook.php` | — | pending |
 | 7 | admin | `includes/class-admin-menu.php` | — | pending |
 | 7 | admin | `class-admin-table-list.php` | — | pending |
@@ -61,6 +61,9 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 - CSV export via `admin_post_wtb_export_csv`, published rows only,
   formula-char quoting except pure numbers; import reverses quote.
 - Admin menu slug: **`wtb-tables`** (referenced by CSV import fallback).
+- Dynamic tag column picker lists ALL tables' text-family columns as
+  `table_id:column_id` keys (Elementor panels render client-side, no
+  server rebuild); `get_value()` fails closed on table/pick mismatch.
 
 ## Open forward references (resolve by step 8/9)
 - `wtb-frontend` / `wtb-block-editor` script/style handles: enqueued by
