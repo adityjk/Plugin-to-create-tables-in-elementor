@@ -1,11 +1,30 @@
 /*
  * Admin styles for the WP Tables list view and single-table editor.
- * The editor is an empty shell server-side; everything below styles
- * the DOM contract admin-builder.js renders into it (.wtb-builder
- * grid, .wtb-setting rows, save status span).
+ *
+ * Design direction: a quiet, dense data-entry tool that feels native
+ * to wp-admin. Everything below styles the DOM contract built by
+ * WTB_Admin_Table_Editor + admin-builder.js (.wtb-builder grid,
+ * .wtb-group settings cards, #wtb-save-status). Tokens come from
+ * WordPress's own palette so the screens never feel bolted on.
  */
 
-/* ---- All-tables list --------------------------------------------- */
+:root {
+	--wtb-ink: #1d2327;
+	--wtb-ink-soft: #50575e;
+	--wtb-accent: #2271b1;
+	--wtb-accent-down: #135e96;
+	--wtb-border: #c3c4c7;
+	--wtb-border-soft: #dcdcde;
+	--wtb-surface: #fff;
+	--wtb-canvas: #f6f7f7;
+	--wtb-ok: #00a32a;
+	--wtb-pending: #dba617;
+	--wtb-error: #d63638;
+	--wtb-radius: 4px;
+	--wtb-speed: 120ms;
+}
+
+/* ---- All-tables list ---------------------------------------------- */
 
 .wtb-row-actions {
 	white-space: nowrap;
@@ -18,9 +37,18 @@
 .wtb-row-actions .button-link {
 	background: none;
 	border: none;
-	color: #2271b1;
+	color: var(--wtb-accent);
 	cursor: pointer;
 	padding: 0;
+}
+
+.wtb-row-actions .button-link:hover {
+	color: var(--wtb-accent-down);
+}
+
+/* Delete is the one destructive action in the row; flag it. */
+.wtb-row-actions [data-wtb-action="delete"] {
+	color: var(--wtb-error);
 }
 
 /* ---- Editor layout ------------------------------------------------ */
@@ -29,155 +57,360 @@
 	align-items: flex-start;
 	display: flex;
 	flex-wrap: wrap;
-	gap: 24px;
+	gap: 20px;
+}
+
+/*
+ * Panels are siblings of the grid, never nested cards: flat white
+ * surfaces with one border and a hairline shadow, per wp-admin.
+ */
+.wtb-panel,
+.wtb-csv-box {
+	background: var(--wtb-surface);
+	border: 1px solid var(--wtb-border);
+	border-radius: var(--wtb-radius);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 
 .wtb-grid-wrap {
 	flex: 1 1 520px;
 	min-width: 0;
+	overflow-x: auto;
+	padding-bottom: 4px;
 }
 
 .wtb-panel {
-	background: #fff;
-	border: 1px solid #c3c4c7;
 	flex: 0 0 300px;
-	padding: 16px;
+	position: sticky;
+	top: 46px;
+}
+
+@media (max-width: 960px) {
+	.wtb-panel {
+		position: static;
+	}
 }
 
 .wtb-panel h2 {
+	font-size: 14px;
+	margin: 0;
+	padding-bottom: 10px;
+	border-bottom: 1px solid var(--wtb-border-soft);
+}
+
+.wtb-csv-box {
+	margin-top: 20px;
+	max-width: 520px;
+	padding: 14px 16px;
+	width: 100%;
+}
+
+.wtb-csv-box h2 {
+	font-size: 14px;
 	margin-top: 0;
 }
 
-/* ---- Builder grid -------------------------------------------------- */
+/* Save is the page's primary action; core leaves .page-title-action
+   as an outline, so promote exactly ours to solid accent. */
+.wrap .page-title-action[data-wtb-action="save"] {
+	background: var(--wtb-accent);
+	border-color: var(--wtb-accent);
+	color: #fff;
+}
+
+.wrap .page-title-action[data-wtb-action="save"]:hover {
+	background: var(--wtb-accent-down);
+	border-color: var(--wtb-accent-down);
+	color: #fff;
+}
+
+#wtb-save-status {
+	font-style: italic;
+	margin-left: 8px;
+}
+
+#wtb-save-status.is-ok {
+	color: var(--wtb-ok);
+	font-style: normal;
+	font-weight: 600;
+}
+
+#wtb-save-status.is-error {
+	color: var(--wtb-error);
+	font-style: normal;
+	font-weight: 600;
+}
+
+/* ---- Builder grid surface ------------------------------------------ */
 
 .wtb-builder {
-	border-collapse: collapse;
+	border-collapse: separate;
+	border-spacing: 0;
 	margin-top: 12px;
 	width: 100%;
 }
 
 .wtb-builder th,
 .wtb-builder td {
-	border: 1px solid #c3c4c7;
-	padding: 6px;
+	background: var(--wtb-surface);
+	border-bottom: 1px solid var(--wtb-border-soft);
+	padding: 8px;
 	vertical-align: top;
 }
 
+.wtb-builder thead th {
+	border-bottom: 2px solid var(--wtb-border);
+	color: var(--wtb-ink-soft);
+	font-size: 12px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+}
+
+.wtb-builder tbody tr:hover td {
+	background: #fbfbfc;
+}
+
+/* The status column reads as the row's leading edge: pin it while
+   the grid scrolls horizontally and mark its inner edge. */
+.wtb-builder .wtb-status-cell,
+.wtb-builder thead th:first-child {
+	left: 0;
+	position: sticky;
+	z-index: 2;
+	box-shadow: 2px 0 0 var(--wtb-border-soft);
+}
+
+.wtb-builder tfoot td {
+	background: var(--wtb-canvas);
+	border-bottom: none;
+}
+
+/* ---- Column heads ---------------------------------------------------- */
+
 .wtb-builder th.wtb-col-head {
-	background: #f6f7f7;
-	min-width: 150px;
+	min-width: 160px;
 }
 
 .wtb-builder th.wtb-col-head input[type="text"],
 .wtb-builder th.wtb-col-head select {
 	box-sizing: border-box;
-	margin-bottom: 5px;
+	margin-bottom: 6px;
 	width: 100%;
+	max-width: none;
 }
+
+.wtb-builder th.wtb-col-head select {
+	font-size: 12px;
+	padding: 2px 24px 2px 6px;
+}
+
+.wtb-builder th.wtb-col-head input[type="text"] {
+	font-weight: 600;
+}
+
+.wtb-col-tools {
+	display: flex;
+	gap: 4px;
+	margin-top: 2px;
+}
+
+/* ---- Compact action buttons (grid tools) ------------------------------- */
+
+.wtb-builder .wtb-col-tools button,
+.wtb-builder .wtb-row-tools button {
+	align-items: center;
+	background: var(--wtb-surface);
+	border: 1px solid var(--wtb-border);
+	border-radius: 3px;
+	box-sizing: border-box;
+	color: var(--wtb-ink-soft);
+	cursor: pointer;
+	display: inline-flex;
+	font-size: 12px;
+	height: 24px;
+	justify-content: center;
+	line-height: 1;
+	min-width: 24px;
+	padding: 0 4px;
+	transition:
+		color var(--wtb-speed) ease,
+		border-color var(--wtb-speed) ease,
+		background var(--wtb-speed) ease;
+}
+
+.wtb-builder .wtb-col-tools button:hover,
+.wtb-builder .wtb-row-tools button:hover {
+	background: var(--wtb-canvas);
+	border-color: var(--wtb-accent);
+	color: var(--wtb-accent);
+}
+
+.wtb-builder .wtb-col-tools button:last-child,
+.wtb-builder .wtb-row-tools button:last-child {
+	color: #b32d2e;
+}
+
+.wtb-builder .wtb-col-tools button:last-child:hover,
+.wtb-builder .wtb-row-tools button:last-child:hover {
+	background: #fcf0f1;
+	border-color: var(--wtb-error);
+	color: var(--wtb-error);
+}
+
+/* ---- Cells ------------------------------------------------------------- */
 
 .wtb-builder .wtb-cell {
+	background: var(--wtb-surface);
+	border: 1px solid var(--wtb-border);
+	border-radius: 3px;
 	box-sizing: border-box;
+	min-height: 30px;
+	padding: 3px 8px;
 	width: 100%;
+	max-width: none;
 }
 
-.wtb-builder .wtb-col-tools,
-.wtb-builder .wtb-row-tools button {
-	cursor: pointer;
+.wtb-builder td:focus-within .wtb-cell {
+	border-color: var(--wtb-accent);
+	box-shadow: 0 0 0 1px var(--wtb-accent);
+	outline: none;
 }
 
-.wtb-builder td.wtb-status-cell,
-.wtb-builder td.wtb-row-tools {
+.wtb-builder .wtb-row-tools {
 	white-space: nowrap;
+	opacity: 0.45;
+	transition: opacity var(--wtb-speed) ease;
 }
 
-.wtb-builder tfoot td {
-	background: #f6f7f7;
+.wtb-builder tr:hover .wtb-row-tools,
+.wtb-builder tr:focus-within .wtb-row-tools {
+	opacity: 1;
 }
 
-/* Image cells: hidden input carries the attachment ID, the preview
-   mirrors it; .is-empty hides a broken placeholder before a choice. */
+/* ---- Image + post cells ---------------------------------------------- */
+
 .wtb-media-cell img {
+	background: var(--wtb-canvas);
+	border: 1px solid var(--wtb-border-soft);
+	border-radius: 3px;
 	display: block;
 	height: auto;
-	margin-bottom: 5px;
+	margin-bottom: 6px;
 	max-width: 90px;
+	padding: 2px;
 }
 
 .wtb-media-cell.is-empty img {
 	display: none;
 }
 
-.wtb-post-title {
-	color: #646970;
-	display: block;
-	font-size: 11px;
-	margin-top: 3px;
+.wtb-media-cell .button {
+	margin-right: 4px;
 }
 
-/* ---- Settings panel ------------------------------------------------ */
+.wtb-post-title {
+	background: var(--wtb-canvas);
+	border-radius: 3px;
+	color: var(--wtb-ink-soft);
+	display: block;
+	font-size: 11px;
+	margin-top: 4px;
+	max-width: 200px;
+	overflow: hidden;
+	padding: 2px 6px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.wtb-post-title:empty {
+	display: none;
+}
+
+/* ---- Settings panel -------------------------------------------------- */
 
 .wtb-setting {
 	margin-bottom: 12px;
 }
 
 .wtb-setting > label {
+	color: var(--wtb-ink);
 	display: block;
+	font-size: 12px;
 	font-weight: 600;
 	margin-bottom: 4px;
 }
 
+.wtb-setting input[type="number"] {
+	max-width: 90px;
+}
+
+.wtb-setting input[type="color"] {
+	border: 1px solid var(--wtb-border);
+	border-radius: 3px;
+	cursor: pointer;
+	padding: 1px;
+	width: 48px;
+	height: 26px;
+}
+
+.wtb-setting input[type="checkbox"] {
+	accent-color: var(--wtb-accent);
+}
+
 .wtb-group {
-	border: 1px solid #dcdcde;
-	margin: 0 0 16px;
-	padding: 10px;
+	background: var(--wtb-canvas);
+	border: 1px solid var(--wtb-border-soft);
+	border-radius: var(--wtb-radius);
+	margin: 0 0 12px;
+	padding: 10px 12px;
 }
 
 .wtb-group legend {
+	color: var(--wtb-ink-soft);
+	font-size: 12px;
 	font-weight: 600;
 	padding: 0 6px;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
 }
 
-#wtb-save-status {
-	font-style: italic;
-}
-
-#wtb-save-status.is-ok {
-	color: #00a32a;
-	font-style: normal;
-}
-
-#wtb-save-status.is-error {
-	color: #d63638;
-	font-style: normal;
-}
-
-/* ---- CSV box + debug log ------------------------------------------- */
-
-.wtb-csv-box {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	margin-top: 24px;
-	max-width: 520px;
-	padding: 12px 16px;
-	width: 100%;
-}
-
-.wtb-csv-box h2 {
-	margin-top: 0;
-}
+/* ---- Debug log ------------------------------------------------------- */
 
 .wtb-log-viewer {
 	clear: both;
-	margin-top: 24px;
+	margin-top: 20px;
 }
 
 .wtb-log-viewer summary {
+	color: var(--wtb-accent);
 	cursor: pointer;
 }
 
 .wtb-log-viewer pre {
-	background: #f6f7f7;
+	background: var(--wtb-canvas);
+	border: 1px solid var(--wtb-border-soft);
+	border-radius: var(--wtb-radius);
+	font-size: 12px;
 	max-height: 320px;
 	overflow: auto;
 	padding: 10px;
+}
+
+/* ---- Accessibility --------------------------------------------------- */
+
+.wtb-builder button:focus-visible,
+.wtb-builder input:focus-visible,
+.wtb-builder select:focus-visible,
+.wtb-setting input:focus-visible,
+.wtb-setting select:focus-visible {
+	outline: 2px solid var(--wtb-accent);
+	outline-offset: 1px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.wtb-builder *,
+	.wtb-panel *,
+	.wtb-setting * {
+		transition: none !important;
+	}
 }
