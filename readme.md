@@ -19,6 +19,7 @@
 - 🔗 **Integrasi WP Posts** — Mengambil data otomatis dari WordPress Posts/Custom Post Types dan memetakannya ke kolom secara dinamis (Thumbnail, Judul, Kategori, Tag).
 - 🕵️ **Advanced Column Filters** — Sediakan filter Dropdown Select (kategori) atau pencarian teks (Text Input) untuk masing-masing kolom dengan integrasi AJAX Server-Side.
 - 🤖 **Anti-Spam Form (Honeypot)** — Validasi bot dan spam via Honeypot tersembunyi pada form pengisian frontend pengunjung.
+- 🔄 **Update Otomatis** — Versi baru otomatis muncul di halaman **Plugins > Updates** dashboard WordPress, lengkap dengan tombol *Update now* dan changelog — tanpa perlu hapus & install ulang ZIP manual.
 
 ---
 
@@ -36,6 +37,17 @@ Karena plugin ini bersifat Open Source dan berada di GitHub, Anda bisa menginsta
 6. Pilih file `.zip` yang baru saja Anda unduh dari *Releases*, lalu klik **Install Now** (Instal Sekarang).
 7. Setelah instalasi selesai, klik **Activate Plugin** (Aktifkan Plugin).
 8. Selesai! Menu **Table Builder** sekarang akan muncul di sidebar kiri admin WordPress Anda.
+
+### 🔄 Cara Update Plugin (Otomatis)
+
+Plugin ini dilengkapi **self-hosted updater** yang terhubung ke GitHub Releases. Artinya, untuk versi selanjutnya Anda **tidak perlu** lagi menghapus dan mengunggah ZIP secara manual:
+
+1. Masuk ke Dashboard WordPress Anda.
+2. Buka menu **Dashboard > Updates** atau halaman **Plugins**.
+3. Jika ada versi baru di GitHub Releases, plugin akan menampilkan notifikasi *"New version available"* beserta tombol **Update now** (pemeriksaan berjalan otomatis setiap ±12 jam, atau klik tombol *Check for updates*).
+4. Klik **Update now** — selesai. Data tabel Anda tidak akan hilang.
+
+> ℹ️ Notifikasi update hanya muncul jika versi baru telah dirilis melalui halaman **Releases** GitHub dengan asset file ZIP (lihat panduan rilis di bawah).
 
 ### 🛠️ Cara Build File ZIP Secara Manual (Khusus Developer)
 
@@ -56,6 +68,27 @@ Jika Anda melakukan *clone* repositori ini (men-download source code) untuk memo
    ```
 4. Script akan membuat folder baru bernama `dist/`. Di dalamnya akan terdapat file instalasi `.zip` (contoh: `wp-table-builder-1.1.0.zip`).
 5. File ZIP dari folder `dist/` inilah yang valid dan siap diunggah ke Dashboard WordPress.
+   > 💡 Versi pada nama file ZIP kini **otomatis** mengikuti header `Version:` di `wp-table-builder.php` — cukup ubah versi di satu tempat saja.
+
+### 🚀 Cara Rilis Versi Baru (Agar Update Muncul Otomatis di WP Admin)
+
+Supaya pengguna menerima notifikasi update langsung dari halaman Plugins, ikuti alur rilis berikut setiap kali ada versi baru:
+
+1. Naikkan versi pada header `Version:` di `wp-content/plugins/wp-table-builder/wp-table-builder.php` (dan konstanta `WTB_VERSION`).
+2. Build ZIP: `./package.sh`.
+3. Commit, lalu buat tag yang **harus sama persis dengan nomor versi** (boleh dengan awalan `v`, contoh: `v1.2.0`):
+   ```bash
+   git tag v1.2.0
+   git push origin v1.2.0
+   ```
+4. Buka GitHub → tab **Releases** → **Draft a new release**, pilih tag tersebut.
+5. Isi judul dan deskripsi changelog (teks ini akan tampil di popup *View details* WordPress).
+6. Pada bagian **Assets**, unggah file ZIP hasil build (contoh: `dist/wp-table-builder-1.2.0.zip`) — **file inilah yang akan diunduh oleh updater**.
+7. Klik **Publish release**.
+
+> ⚠️ Catatan penting:
+> - Jangan gunakan asset otomatis *"Source code (zip)"* milik GitHub — struktur foldernya tidak sesuai sehingga update akan gagal.
+> - Nomor versi pada tag harus lebih tinggi dari versi yang terpasang agar WordPress mendeteksinya sebagai update.
 
 ---
 

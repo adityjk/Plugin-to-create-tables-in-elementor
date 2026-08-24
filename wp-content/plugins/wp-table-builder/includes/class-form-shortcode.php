@@ -8,9 +8,7 @@ class WTB_Form_Shortcode {
     }
 
     public static function render( array $atts ): string {
-        $atts     = shortcode_atts( [ 'id' => 0 ], $atts, 'wtb_table_form' );
-        $table_id = absint( $atts['id'] );
-
+        $table_id = absint( shortcode_atts( [ 'id' => 0 ], $atts, 'wtb_table_form' )['id'] );
         if ( ! $table_id ) return '';
 
         return WTB_Render::render_form( $table_id );
