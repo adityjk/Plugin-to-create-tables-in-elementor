@@ -151,10 +151,42 @@ function wtb_register_admin_assets() {
 		[],
 		WTB_VERSION
 	);
+
+	/*
+	 * The builder is three layers sharing one namespace: base
+	 * (REST/DOM plumbing), cells + settings panel (stateless widget
+	 * factories), builder (views). Only the last handle gets enqueued.
+	 */
+	wp_register_script(
+		'wtb-admin-base',
+		WTB_PLUGIN_URL . 'assets/js/admin-base.js',
+		[ 'jquery' ],
+		WTB_VERSION,
+		true
+	);
+	wp_register_script(
+		'wtb-admin-cells',
+		WTB_PLUGIN_URL . 'assets/js/admin-cells.js',
+		[ 'wtb-admin-base' ],
+		WTB_VERSION,
+		true
+	);
+	wp_register_script(
+		'wtb-admin-settings-panel',
+		WTB_PLUGIN_URL . 'assets/js/admin-settings-panel.js',
+		[ 'wtb-admin-base' ],
+		WTB_VERSION,
+		true
+	);
 	wp_register_script(
 		'wtb-admin-builder',
 		WTB_PLUGIN_URL . 'assets/js/admin-builder.js',
-		[ 'jquery' ],
+		[
+			'jquery',
+			'wtb-admin-base',
+			'wtb-admin-cells',
+			'wtb-admin-settings-panel',
+		],
 		WTB_VERSION,
 		true
 	);

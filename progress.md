@@ -45,8 +45,18 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 9 | assets | `assets/css/frontend.css` | 105 | done |
 | 9 | assets | `assets/css/admin.css` | 183 | done |
 | 9 | assets | `assets/js/frontend.js` | 256 | done |
-| 9 | assets | `assets/js/block-editor.js` | — | next |
-| 9 | assets | `assets/js/admin-builder.js` | — | pending |
+| 9 | assets | `assets/js/block-editor.js` | 147 | done |
+| 9 | assets | `assets/js/admin-base.js` | 257 | done |
+| 9 | assets | `assets/js/admin-cells.js` | 161 | done |
+| 9 | assets | `assets/js/admin-settings-panel.js` | 184 | done |
+| 9 | assets | `assets/js/admin-builder.js` | 445 | done |
+| 10 | release | `vendor/plugin-update-checker/` | v4.13 | done |
+| 10 | release | `release.sh` (repo root) | 63 | done |
+
+Note: admin JS was planned as one `admin-builder.js` but the first
+draft hit 885 lines (limit 500), so it was split into four layered
+scripts sharing the `WTB_ADMIN` namespace; bootstrap registers all
+four handles and only enqueues `wtb-admin-builder` (deps cascade).
 
 ## Decisions locked in so far
 - Data types: `text, number, date, image, url, post`; image/post cells
@@ -76,6 +86,23 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 - Renderer forms carry `data-rest-base` (standalone form shortcode has
   no table wrap to read it from). frontend.js polls only when a config
   carries pollSeconds — no renderer emits it yet.
+- Admin JS layers: `admin-base.js` owns the `.wtb-admin` contract and
+  exposes `WTB_ADMIN` (request/coreUrl/errorText/editUrl, tag/button/
+  select/checkbox/numberInput factories, moveItem, attachment/post
+  lookups with caching, shared media frame); `admin-cells.js` exposes
+  `WTB_CELLS` — pure value→widget factories per data type; `admin-
+  settings-panel.js` exposes `WTB_SETTINGS_PANEL.render(host,
+  settings)` bound by path to the sanitizer's settings shape;
+  `admin-builder.js` owns state + views. New column ids are `tmpN`
+  temp keys; save response replaces working state wholesale.
+- `coreUrl()` handles both pretty (`/wp-json/wtb/v1`) and plain
+  (`?rest_route=`) REST roots for the /wp/v2 media+post lookups.
+- plugin-update-checker v4.13 vendored under `vendor/plugin-update-
+  checker/` (pruned dev-only files: examples/, README.md, composer.json);
+  v4 chosen deliberately to match the bootstrap's `Puc_v4_Factory`.
+- `release.sh X.Y.Z`: refuses to build if the updater vendor file is
+  missing (encodes the v1 "shipped without vendor/" bug as a gate),
+  zips with `wp-table-builder/` as top-level dir, excludes only OS cruft.
 
 ## Open forward references (resolved)
 - `wtb-frontend` / `wtb-block-editor` handles: registered in the
@@ -150,14 +177,19 @@ Dynamic-tag column picker and form-action override map notes are in
   binding, full-state save payload, approval status toggles, CSV
   buttons, log viewer.
 
-### Release prerequisites (after step 9)
-- Acquire `vendor/plugin-update-checker/` (runtime dependency — the
-  packaging script must never exclude it).
-- Packaging script producing `dist/wp-table-builder-X.Y.Z.zip`
-  (dist/ gitignored, zip never committed).
+### Release prerequisites
+- ~~Acquire `vendor/plugin-update-checker/`~~ (done — v4.13, see decisions).
+- ~~Packaging script producing `dist/wp-table-builder-X.Y.Z.zip`~~
+  (done — `release.sh` at repo root; dist/ gitignored).
 - Version bump checklist: plugin header, `WTB_VERSION`, packaging
   script — three places.
 - Run DESIGN.md manual testing checklist before first release.
+
+## Status summary
+All build steps (0–10) are done. What remains is manual testing in the
+Docker environment per DESIGN.md's checklist — and per AGENTS.md rule 2,
+only after the working tree is committed AND both `chmod a+w` commands
+from DESIGN.md are applied.
 
 ### Open decision (RESOLVED)
 - DataTables 1.13.8 bundled under `assets/vendor/` (js+css, no image
