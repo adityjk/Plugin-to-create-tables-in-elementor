@@ -154,7 +154,7 @@ Dynamic-tag column picker and form-action override map notes are in
   script — three places.
 - Run DESIGN.md manual testing checklist before first release.
 
-### Open decision (default set, redirect if you disagree)
-- DataTables source: bundle `jquery.dataTables.min.js/.css` under
-  `assets/vendor/` (no CDN dependency, works offline) — default is
-  bundling since there is no build step.
+### Open decision (RESOLVED)
+- DataTables 1.13.8 bundled under `assets/vendor/` (js+css, no image
+  deps — 1.13.x draws sort icons in CSS). Matches the versions the
+  bootstrap registers.
