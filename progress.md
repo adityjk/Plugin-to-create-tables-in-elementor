@@ -43,7 +43,7 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 8 | bootstrap | `uninstall.php` | 60 | done |
 | 8 | bootstrap | `readme.txt` | 77 | done |
 | 9 | assets | `assets/css/frontend.css` | 105 | done |
-| 9 | assets | `assets/css/admin.css` | — | next |
+| 9 | assets | `assets/css/admin.css` | 183 | done |
 | 9 | assets | `assets/js/*` (3 files) | — | pending |
 
 ## Decisions locked in so far

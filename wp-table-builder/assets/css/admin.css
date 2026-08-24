@@ -1,0 +1,183 @@
+/*
+ * Admin styles for the WP Tables list view and single-table editor.
+ * The editor is an empty shell server-side; everything below styles
+ * the DOM contract admin-builder.js renders into it (.wtb-builder
+ * grid, .wtb-setting rows, save status span).
+ */
+
+/* ---- All-tables list --------------------------------------------- */
+
+.wtb-row-actions {
+	white-space: nowrap;
+}
+
+.wtb-row-actions > * {
+	margin-right: 10px;
+}
+
+.wtb-row-actions .button-link {
+	background: none;
+	border: none;
+	color: #2271b1;
+	cursor: pointer;
+	padding: 0;
+}
+
+/* ---- Editor layout ------------------------------------------------ */
+
+#wtb-editor {
+	align-items: flex-start;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 24px;
+}
+
+.wtb-grid-wrap {
+	flex: 1 1 520px;
+	min-width: 0;
+}
+
+.wtb-panel {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	flex: 0 0 300px;
+	padding: 16px;
+}
+
+.wtb-panel h2 {
+	margin-top: 0;
+}
+
+/* ---- Builder grid -------------------------------------------------- */
+
+.wtb-builder {
+	border-collapse: collapse;
+	margin-top: 12px;
+	width: 100%;
+}
+
+.wtb-builder th,
+.wtb-builder td {
+	border: 1px solid #c3c4c7;
+	padding: 6px;
+	vertical-align: top;
+}
+
+.wtb-builder th.wtb-col-head {
+	background: #f6f7f7;
+	min-width: 150px;
+}
+
+.wtb-builder th.wtb-col-head input[type="text"],
+.wtb-builder th.wtb-col-head select {
+	box-sizing: border-box;
+	margin-bottom: 5px;
+	width: 100%;
+}
+
+.wtb-builder .wtb-cell {
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.wtb-builder .wtb-col-tools,
+.wtb-builder .wtb-row-tools button {
+	cursor: pointer;
+}
+
+.wtb-builder td.wtb-status-cell,
+.wtb-builder td.wtb-row-tools {
+	white-space: nowrap;
+}
+
+.wtb-builder tfoot td {
+	background: #f6f7f7;
+}
+
+/* Image cells: hidden input carries the attachment ID, the preview
+   mirrors it; .is-empty hides a broken placeholder before a choice. */
+.wtb-media-cell img {
+	display: block;
+	height: auto;
+	margin-bottom: 5px;
+	max-width: 90px;
+}
+
+.wtb-media-cell.is-empty img {
+	display: none;
+}
+
+.wtb-post-title {
+	color: #646970;
+	display: block;
+	font-size: 11px;
+	margin-top: 3px;
+}
+
+/* ---- Settings panel ------------------------------------------------ */
+
+.wtb-setting {
+	margin-bottom: 12px;
+}
+
+.wtb-setting > label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 4px;
+}
+
+.wtb-group {
+	border: 1px solid #dcdcde;
+	margin: 0 0 16px;
+	padding: 10px;
+}
+
+.wtb-group legend {
+	font-weight: 600;
+	padding: 0 6px;
+}
+
+#wtb-save-status {
+	font-style: italic;
+}
+
+#wtb-save-status.is-ok {
+	color: #00a32a;
+	font-style: normal;
+}
+
+#wtb-save-status.is-error {
+	color: #d63638;
+	font-style: normal;
+}
+
+/* ---- CSV box + debug log ------------------------------------------- */
+
+.wtb-csv-box {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	margin-top: 24px;
+	max-width: 520px;
+	padding: 12px 16px;
+	width: 100%;
+}
+
+.wtb-csv-box h2 {
+	margin-top: 0;
+}
+
+.wtb-log-viewer {
+	clear: both;
+	margin-top: 24px;
+}
+
+.wtb-log-viewer summary {
+	cursor: pointer;
+}
+
+.wtb-log-viewer pre {
+	background: #f6f7f7;
+	max-height: 320px;
+	overflow: auto;
+	padding: 10px;
+}
