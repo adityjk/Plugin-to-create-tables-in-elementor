@@ -1,0 +1,105 @@
+/*
+ * Structural styles shared by every rendered table and submission
+ * form. Per-table colors/padding/borders arrive as scoped inline
+ * blocks from WTB_Table_Css, which override anything set here - this
+ * file only guarantees sane structure when a table's visual settings
+ * are left empty.
+ */
+
+/* ---- Table shell ------------------------------------------------ */
+
+.wtb-table-wrap {
+	margin: 1.25em 0;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.wtb-table {
+	border-collapse: collapse;
+	width: 100%;
+}
+
+.wtb-table th,
+.wtb-table td {
+	padding: 0.5em;
+	text-align: left;
+	vertical-align: top;
+}
+
+/* Neutral default separators; per-table border settings win. */
+.wtb-table tbody td {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+/* Image cells must not dictate column width or overflow the grid. */
+.wtb-table img {
+	height: auto;
+	max-width: 120px;
+}
+
+/* Column select filters are injected into their headers by
+   frontend.js; kept visually quieter than the heading text. */
+.wtb-table th select {
+	font-weight: normal;
+	margin-left: 0.5em;
+	max-width: 9em;
+}
+
+/* ---- Visitor submission form ------------------------------------ */
+
+.wtb-form {
+	box-sizing: border-box;
+	max-width: 30em;
+}
+
+.wtb-form-field {
+	margin: 0 0 1em;
+}
+
+.wtb-form-field label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.3em;
+}
+
+.wtb-form-field input {
+	border: 1px solid #8c8f94;
+	border-radius: 3px;
+	box-sizing: border-box;
+	padding: 0.45em 0.6em;
+	width: 100%;
+}
+
+.wtb-form-actions {
+	margin: 0;
+}
+
+.wtb-form-submit {
+	cursor: pointer;
+}
+
+/* Submission feedback written by frontend.js; aria-live announced. */
+.wtb-form-status {
+	display: none;
+	margin-top: 0.75em;
+	padding: 0.6em 0.8em;
+}
+
+.wtb-form-status.is-visible {
+	display: block;
+}
+
+.wtb-form-status.is-error {
+	background: #fbeaea;
+	color: #8a1f1f;
+}
+
+.wtb-form-status.is-pending {
+	background: #fdf6e3;
+	color: #7d6608;
+}
+
+.wtb-form-status.is-ok {
+	background: #edf7ed;
+	color: #1e4620;
+}
