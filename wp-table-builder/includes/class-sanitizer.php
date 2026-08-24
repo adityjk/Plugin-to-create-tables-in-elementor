@@ -40,6 +40,11 @@ class WTB_Sanitizer {
 	const IMAGE_SIZES = [ 'thumbnail', 'medium', 'medium_large', 'large', 'full' ];
 
 	/**
+	 * Frontend filter widgets a column header can request.
+	 */
+	const FILTER_TYPES = [ 'none', 'select' ];
+
+	/**
 	 * Plain text: tags stripped, whitespace trimmed.
 	 */
 	public static function text( $value ) {
@@ -160,7 +165,7 @@ class WTB_Sanitizer {
 		}
 
 		$filter = self::key( self::field( $settings, 'filter_type' ) );
-		if ( ! in_array( $filter, [ 'none', 'select' ], true ) ) {
+		if ( ! in_array( $filter, self::FILTER_TYPES, true ) ) {
 			$filter = 'none';
 		}
 

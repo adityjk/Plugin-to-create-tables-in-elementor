@@ -37,9 +37,9 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 6 | Elementor | `includes/class-elementor-form-hook.php` | 42 | done |
 | 7 | admin | `includes/class-admin-menu.php` | 146 | done |
 | 7 | admin | `includes/class-admin-table-list.php` | 116 | done |
-| 7 | admin | `includes/class-admin-table-editor.php` | — | next |
+| 7 | admin | `includes/class-admin-table-editor.php` | 156 | done |
 | 7 | admin | `includes/class-debug-log.php` | 98 | done |
-| 8 | bootstrap | `wp-table-builder.php` | — | pending |
+| 8 | bootstrap | `wp-table-builder.php` | — | next |
 | 8 | bootstrap | `uninstall.php` | — | pending |
 | 8 | bootstrap | `readme.txt` | — | pending |
 | 9 | assets | `assets/css/admin.css`, `frontend.css` | — | pending |
@@ -64,6 +64,12 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 - Dynamic tag column picker lists ALL tables' text-family columns as
   `table_id:column_id` keys (Elementor panels render client-side, no
   server rebuild); `get_value()` fails closed on table/pick mismatch.
+- Sanitizer gained a `FILTER_TYPES` const so the editor's JS gets the
+  same filter whitelist PHP validates against; column() behavior is
+  unchanged.
+- Admin JS contract: shared REST root + nonce live on the `.wtb-admin`
+  wrapper as data attrs; per-view config lives in data-config JSON;
+  buttons carry data-wtb-action/data-id/data-confirm.
 
 ## Open forward references (resolve by step 8/9)
 - `wtb-frontend` / `wtb-block-editor` script/style handles: enqueued by
