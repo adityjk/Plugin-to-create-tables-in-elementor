@@ -35,8 +35,8 @@ Plugin code lives in `wp-table-builder/`, docs at repo root.
 | 6 | Elementor | `includes/class-elementor-dynamic-tag.php` | 225 | done |
 | 6 | Elementor | `includes/class-elementor-form-action.php` | 276 | done |
 | 6 | Elementor | `includes/class-elementor-form-hook.php` | 42 | done |
-| 7 | admin | `includes/class-admin-menu.php` | — | pending |
-| 7 | admin | `class-admin-table-list.php` | — | pending |
+| 7 | admin | `includes/class-admin-menu.php` | 146 | done |
+| 7 | admin | `includes/class-admin-table-list.php` | — | next |
 | 7 | admin | `class-admin-table-editor.php` | — | pending |
 | 7 | admin | `includes/class-debug-log.php` | 98 | done |
 | 8 | bootstrap | `wp-table-builder.php` | — | pending |
